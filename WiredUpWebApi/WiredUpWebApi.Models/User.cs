@@ -47,6 +47,6 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<Message> Messages { get; set; }
 
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<UserPost> Posts { get; set; }
     }
 }

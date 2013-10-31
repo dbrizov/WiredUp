@@ -44,8 +44,9 @@
     <Compile Include="Certificate.cs" />
     <Compile Include="City.cs" />
     <Compile Include="Company.cs" />
+    <Compile Include="CompanyPost.cs" />
     <Compile Include="Country.cs" />
-    <Compile Include="Post.cs" />
+    <Compile Include="UserPost.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Skill.cs" />

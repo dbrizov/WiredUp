@@ -22,6 +22,6 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<User> Followers { get; set; }
 
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<CompanyPost> Posts { get; set; }
     }
 }
