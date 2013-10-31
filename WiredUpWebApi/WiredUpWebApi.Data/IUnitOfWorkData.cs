@@ -6,11 +6,7 @@ namespace WiredUpWebApi.Data
 {
     public interface IUnitOfWorkData : IDisposable
     {
-        IRepository<Address> UserAddresses { get; }
-
-        IRepository<Certificate> UserCertificates { get; }
-
-        IRepository<City> Cities { get; }
+        IRepository<Certificate> Certificates { get; }
 
         IRepository<Company> Companies { get; }
 
@@ -20,9 +16,9 @@ namespace WiredUpWebApi.Data
 
         IRepository<Message> Messages { get; }
 
-        IRepository<Project> UserProjects { get; }
+        IRepository<Project> Projects { get; }
 
-        IRepository<Skill> UserSkills { get; }
+        IRepository<Skill> Skills { get; }
 
         IRepository<User> Users { get; }
 

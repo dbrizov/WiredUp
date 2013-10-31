@@ -43,27 +43,11 @@ namespace WiredUpWebApi.Data
             this.dbContext.Dispose();
         }
 
-        public IRepository<Address> UserAddresses
-        {
-            get
-            {
-                return this.GetRepository<Address>();
-            }
-        }
-
-        public IRepository<Certificate> UserCertificates
+        public IRepository<Certificate> Certificates
         {
             get
             {
                 return this.GetRepository<Certificate>();
-            }
-        }
-
-        public IRepository<City> Cities
-        {
-            get
-            {
-                return this.GetRepository<City>();
             }
         }
 
@@ -99,7 +83,7 @@ namespace WiredUpWebApi.Data
             }
         }
 
-        public IRepository<Project> UserProjects
+        public IRepository<Project> Projects
         {
             get
             {
@@ -107,7 +91,7 @@ namespace WiredUpWebApi.Data
             }
         }
 
-        public IRepository<Skill> UserSkills
+        public IRepository<Skill> Skills
         {
             get
             {

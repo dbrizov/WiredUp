@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using WiredUpWebApi.Models.Constants;
 
@@ -9,6 +10,7 @@ namespace WiredUpWebApi.Models
     public class Company
     {
         [Key]
+        [Column("CompanyId")]
         public int Id { get; set; }
 
         [Required]
@@ -24,5 +26,11 @@ namespace WiredUpWebApi.Models
         public virtual ICollection<User> Followers { get; set; }
 
         public virtual ICollection<CompanyPost> Posts { get; set; }
+
+        public Company()
+        {
+            this.Followers = new HashSet<User>();
+            this.Posts = new HashSet<CompanyPost>();
+        }
     }
 }

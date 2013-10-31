@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using WiredUpWebApi.Models.Constants;
 
@@ -8,6 +9,7 @@ namespace WiredUpWebApi.Models
     public class UserPost
     {
         [Key]
+        [Column("UserPostId")]
         public int Id { get; set; }
 
         [Required]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using WiredUpWebApi.Models.Constants;
 
@@ -9,6 +10,7 @@ namespace WiredUpWebApi.Models
     public class User
     {
         [Key]
+        [Column("UserId")]
         public int Id { get; set; }
 
         [Required]
@@ -24,15 +26,19 @@ namespace WiredUpWebApi.Models
         public string Email { get; set; }
 
         [Required]
-        [MinLength(UserConstants.PasswordMinLength)]
-        [MaxLength(UserConstants.PasswordMaxLength)]
-        public string Password { get; set; }
+        [MinLength(UserConstants.AuthCodeMinLength)]
+        [MaxLength(UserConstants.AuthCodeMaxLength)]
+        // Sha1 encrypted password
+        public string AuthCode { get; set; }
+
+        [MaxLength(UserConstants.SessionKeyMaxLength)]
+        public string SessionKey { get; set; }
 
         public byte[] Photo { get; set; }
 
-        public int AddressId { get; set; }
+        public int? CountryId { get; set; }
 
-        public virtual Address Address { get; set; }
+        public virtual Country Country { get; set; }
 
         [MaxLength(UserConstants.LanguagesMaxLength)]
         public string Languages { get; set; }
@@ -47,8 +53,22 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<Skill> Skills { get; set; }
 
-        public virtual ICollection<Message> Messages { get; set; }
+        public virtual ICollection<Message> SentMessages { get; set; }
+
+        public virtual ICollection<Message> RecievedMessages { get; set; }
 
         public virtual ICollection<UserPost> Posts { get; set; }
+
+        public User()
+        {
+            this.Connections = new HashSet<User>();
+            this.Followings = new HashSet<Company>();
+            this.Projects = new HashSet<Project>();
+            this.Certificates = new HashSet<Certificate>();
+            this.Skills = new HashSet<Skill>();
+            this.SentMessages = new HashSet<Message>();
+            this.RecievedMessages = new HashSet<Message>();
+            this.Posts = new HashSet<UserPost>();
+        }
     }
 }
