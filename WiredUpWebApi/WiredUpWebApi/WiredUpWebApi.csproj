@@ -156,6 +156,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
+    <Compile Include="Models\UserModels\UserLoginModel.cs" />
     <Compile Include="Models\UserModels\UserRegisterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

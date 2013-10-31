@@ -75,7 +75,7 @@ namespace WiredUpWebApi.Controllers
 
                 var userLoggedModel = new UserLoggedModel()
                 {
-                    FullName = newUser.FirstName + " " + newUser.LastName,
+                    DisplayName = newUser.FirstName + " " + newUser.LastName,
                     SessionKey = newUser.SessionKey
                 };
 
@@ -86,44 +86,41 @@ namespace WiredUpWebApi.Controllers
             return responseMsg;
         }
 
-        //[HttpPost]
-        //[ActionName("login")]
-        //public HttpResponseMessage LoginUser([FromBody]UserModel model)
-        //{
-        //    var responseMsg = this.PerformOperationAndHandleExceptions(() =>
-        //    {
-        //        ValidateUsername(model.Username);
-        //        ValidateAuthCode(model.AuthCode);
+        [HttpPost]
+        [ActionName("login")]
+        public HttpResponseMessage LoginUser([FromBody]UserLoginModel model)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                User user = this.db.Users.All().Where(
+                    usr => usr.Email == model.Email.ToLower() &&
+                           usr.AuthCode == model.AuthCode).FirstOrDefault();
 
-        //        string modelUsernameToLower = model.Username.ToLower();
+                if (user == null)
+                {
+                    // The user does not exist
+                    throw new InvalidOperationException("Invalid email or password");
+                }
 
-        //        User user = this.userRepository.GetAll().Where(
-        //            usr => usr.Username.ToLower() == modelUsernameToLower &&
-        //                   usr.AuthCode == model.AuthCode).FirstOrDefault();
+                if (user.SessionKey == null)
+                {
+                    user.SessionKey = this.GenerateSessionKey(user.Id);
+                    this.db.Users.Update(user);
+                    this.db.SaveChanges();
+                }
 
-        //        if (user == null)
-        //        {
-        //            throw new InvalidOperationException("Invalid username or password");
-        //        }
+                var userLoggedModel = new UserLoggedModel()
+                {
+                    DisplayName = user.FirstName + " " + user.LastName,
+                    SessionKey = user.SessionKey
+                };
 
-        //        if (user.SessionKey == null)
-        //        {
-        //            user.SessionKey = this.GenerateSessionKey(user.Id);
-        //            this.userRepository.Update(user.Id, user);
-        //        }
+                var response = this.Request.CreateResponse(HttpStatusCode.Created, userLoggedModel);
+                return response;
+            });
 
-        //        var userLoggedModel = new UserLoggedModel()
-        //        {
-        //            DisplayName = user.DisplayName,
-        //            SessionKey = user.SessionKey
-        //        };
-
-        //        var response = this.Request.CreateResponse(HttpStatusCode.Created, userLoggedModel);
-        //        return response;
-        //    });
-
-        //    return responseMsg;
-        //}
+            return responseMsg;
+        }
 
         //[HttpPut]
         //[ActionName("logout")]

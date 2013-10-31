@@ -7,8 +7,8 @@ namespace WiredUpWebApi.Models.UserModels
     [DataContract]
     public class UserLoggedModel
     {
-        [DataMember(Name = "fullName")]
-        public string FullName { get; set; }
+        [DataMember(Name = "displayName")]
+        public string DisplayName { get; set; }
 
         [DataMember(Name = "sessionKey")]
         public string SessionKey { get; set; }
