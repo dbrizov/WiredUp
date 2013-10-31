@@ -7,5 +7,6 @@ namespace WiredUpWebApi.Models.Constants
     {
         public const int NameMaxLength = 100;
         public const int EmailMaxLength = 100;
+        public const int DescriptionMaxLength = 3000;
     }
 }

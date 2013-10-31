@@ -21,6 +21,7 @@ namespace WiredUpWebApi.Models
         [MaxLength(CompanyConstants.EmailMaxLength)]
         public string Email { get; set; }
 
+        [MaxLength(CompanyConstants.DescriptionMaxLength)]
         public string Description { get; set; }
 
         public virtual ICollection<User> Followers { get; set; }
