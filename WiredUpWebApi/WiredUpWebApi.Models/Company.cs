@@ -21,5 +21,7 @@ namespace WiredUpWebApi.Models
         public string Description { get; set; }
 
         public virtual ICollection<User> Followers { get; set; }
+
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }
