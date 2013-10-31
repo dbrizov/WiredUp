@@ -51,7 +51,7 @@ namespace WiredUpWebApi.Controllers
                 string emailToLower = model.Email.ToLower();
 
                 User existingUser =
-                    this.db.Users.All().Where(usr => usr.Email == emailToLower).FirstOrDefault();
+                    this.db.Users.All().Where(u => u.Email == emailToLower).FirstOrDefault();
 
                 if (existingUser != null)
                 {
@@ -93,8 +93,8 @@ namespace WiredUpWebApi.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 User user = this.db.Users.All().Where(
-                    usr => usr.Email == model.Email.ToLower() &&
-                           usr.AuthCode == model.AuthCode).FirstOrDefault();
+                    u => u.Email == model.Email.ToLower() &&
+                           u.AuthCode == model.AuthCode).FirstOrDefault();
 
                 if (user == null)
                 {
@@ -122,29 +122,30 @@ namespace WiredUpWebApi.Controllers
             return responseMsg;
         }
 
-        //[HttpPut]
-        //[ActionName("logout")]
-        //public HttpResponseMessage LogoutUser([FromUri]string sessionKey)
-        //{
-        //    var responseMsg = this.PerformOperationAndHandleExceptions(() =>
-        //    {
-        //        var user = this.userRepository.GetAll().Where(
-        //            u => u.SessionKey == sessionKey).FirstOrDefault();
+        [HttpPut]
+        [ActionName("logout")]
+        public HttpResponseMessage LogoutUser([FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = this.db.Users.All().Where(
+                    u => u.SessionKey == sessionKey).FirstOrDefault();
 
-        //        if (user == null)
-        //        {
-        //            throw new InvalidOperationException("The user is not logged in");
-        //        }
+                if (user == null)
+                {
+                    throw new InvalidOperationException("The user is not logged in");
+                }
 
-        //        user.SessionKey = null;
-        //        this.userRepository.Update(user.Id, user);
+                user.SessionKey = null;
+                this.db.Users.Update(user);
+                this.db.SaveChanges();
 
-        //        var response = this.Request.CreateResponse(HttpStatusCode.OK, (object)null);
-        //        return response;
-        //    });
+                var response = this.Request.CreateResponse(HttpStatusCode.OK, (object)null);
+                return response;
+            });
 
-        //    return responseMsg;
-        //}
+            return responseMsg;
+        }
 
         private string GenerateSessionKey(int userId)
         {
