@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
+using WiredUpWebApi.Models.Constants;
 
 namespace WiredUpWebApi.Models
 {
@@ -12,7 +11,7 @@ namespace WiredUpWebApi.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(PostConstants.ContentMaxLength)]
         public string Content { get; set; }
 
         [Required]

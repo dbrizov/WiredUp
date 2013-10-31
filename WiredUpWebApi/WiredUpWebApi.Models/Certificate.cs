@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using WiredUpWebApi.Models.Constants;
 
 namespace WiredUpWebApi.Models
 {
@@ -10,7 +11,7 @@ namespace WiredUpWebApi.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(CertificateConstants.NameMaxLength)]
         public string Name { get; set; }
 
         public string Url { get; set; }

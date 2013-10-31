@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using WiredUpWebApi.Models.Constants;
 
 namespace WiredUpWebApi.Models
 {
@@ -11,12 +12,14 @@ namespace WiredUpWebApi.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(ProjectConstants.NameMaxLength)]
         public string Name { get; set; }
 
+        [MaxLength(ProjectConstants.DescriptionMaxLength)]
         public string Description { get; set; }
 
-        public string ProjectUrl { get; set; }
+        [MaxLength(ProjectConstants.UrlMaxLength)]
+        public string Url { get; set; }
 
         public virtual ICollection<User> TeamMembers { get; set; }
     }

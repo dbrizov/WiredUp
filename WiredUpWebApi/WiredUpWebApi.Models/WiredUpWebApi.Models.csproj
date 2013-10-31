@@ -46,6 +46,15 @@
     <Compile Include="Company.cs" />
     <Compile Include="CompanyPost.cs" />
     <Compile Include="Country.cs" />
+    <Compile Include="Constants\CertificateConstants.cs" />
+    <Compile Include="Constants\CityConstants.cs" />
+    <Compile Include="Constants\CompanyConstants.cs" />
+    <Compile Include="Constants\CountryConstants.cs" />
+    <Compile Include="Constants\MessageConstants.cs" />
+    <Compile Include="Constants\PostConstants.cs" />
+    <Compile Include="Constants\ProjectConstants.cs" />
+    <Compile Include="Constants\SkillConstants.cs" />
+    <Compile Include="Constants\UserConstants.cs" />
     <Compile Include="UserPost.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

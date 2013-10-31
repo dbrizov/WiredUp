@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using WiredUpWebApi.Models.Constants;
 
 namespace WiredUpWebApi.Models
 {
@@ -11,19 +12,20 @@ namespace WiredUpWebApi.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(25)]
+        [MaxLength(UserConstants.FirstNameMaxLength)]
         public string FirstName { get; set; }
 
         [Required]
-        [MaxLength(25)]
+        [MaxLength(UserConstants.LastNameMaxLength)]
         public string LastName { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(UserConstants.EmailMaxLength)]
         public string Email { get; set; }
 
         [Required]
-        [MaxLength(30)]
+        [MinLength(UserConstants.PasswordMinLength)]
+        [MaxLength(UserConstants.PasswordMaxLength)]
         public string Password { get; set; }
 
         public byte[] Photo { get; set; }
@@ -32,7 +34,7 @@ namespace WiredUpWebApi.Models
 
         public virtual Address Address { get; set; }
 
-        [MaxLength(500)]
+        [MaxLength(UserConstants.LanguagesMaxLength)]
         public string Languages { get; set; }
 
         public virtual ICollection<User> Connections { get; set; }
