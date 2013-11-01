@@ -156,6 +156,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\MessageModels\MessageDetailedModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
     <Compile Include="Models\UserModels\UserLoginModel.cs" />

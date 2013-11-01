@@ -40,7 +40,7 @@ namespace WiredUpWebApi.Data
 
             modelBuilder.Entity<Message>()
                        .HasRequired(m => m.Receiver)
-                       .WithMany(usr => usr.RecievedMessages)
+                       .WithMany(usr => usr.ReceivedMessages)
                        .HasForeignKey(m => m.ReceiverId)
                        .WillCascadeOnDelete(false);
         }

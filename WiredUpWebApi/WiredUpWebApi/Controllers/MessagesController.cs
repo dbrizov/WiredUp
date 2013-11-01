@@ -50,7 +50,7 @@ namespace WiredUpWebApi.Controllers
                 };
 
                 sender.SentMessages.Add(newMessage);
-                receiver.RecievedMessages.Add(newMessage);
+                receiver.ReceivedMessages.Add(newMessage);
 
                 this.db.Users.Update(sender);
                 this.db.Users.Update(receiver);
@@ -63,6 +63,41 @@ namespace WiredUpWebApi.Controllers
             });
 
             return responseMsg;
+        }
+
+        [HttpGet]
+        [ActionName("sent")]
+        public IEnumerable<MessageDetailedModel> GetSentMessage([FromUri]string sessionKey)
+        {
+            var user = this.GetUserBySessionKey(sessionKey);
+            var messages = user.SentMessages.Select(MessageDetailedModel.FromMessage.Compile());
+
+            return messages;
+        }
+
+        [HttpGet]
+        [ActionName("received")]
+        public IEnumerable<MessageDetailedModel> GetReceivedMessages([FromUri]string sessionKey)
+        {
+            var user = this.GetUserBySessionKey(sessionKey);
+            var messages = user.ReceivedMessages.Select(MessageDetailedModel.FromMessage.Compile());
+
+            return messages;
+        }
+
+        [HttpGet]
+        [ActionName("all")]
+        public IEnumerable<MessageDetailedModel> GetAll([FromUri]string sessionKey)
+        {
+            var user = this.GetUserBySessionKey(sessionKey);
+            var sentMessages = user.SentMessages.Select(MessageDetailedModel.FromMessage.Compile());
+            var receviedMessages = user.ReceivedMessages.Select(MessageDetailedModel.FromMessage.Compile());
+
+            var allMessages = new List<MessageDetailedModel>();
+            allMessages.AddRange(sentMessages);
+            allMessages.AddRange(receviedMessages);
+
+            return allMessages;
         }
 
         private void ValidateMessageContent(string messageContent)

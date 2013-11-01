@@ -55,7 +55,7 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<Message> SentMessages { get; set; }
 
-        public virtual ICollection<Message> RecievedMessages { get; set; }
+        public virtual ICollection<Message> ReceivedMessages { get; set; }
 
         public virtual ICollection<UserPost> Posts { get; set; }
 
@@ -67,7 +67,7 @@ namespace WiredUpWebApi.Models
             this.Certificates = new HashSet<Certificate>();
             this.Skills = new HashSet<Skill>();
             this.SentMessages = new HashSet<Message>();
-            this.RecievedMessages = new HashSet<Message>();
+            this.ReceivedMessages = new HashSet<Message>();
             this.Posts = new HashSet<UserPost>();
         }
     }
