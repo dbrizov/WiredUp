@@ -671,5 +671,649 @@ namespace WiredUpWebApi.Tests
                 Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
             }
         }
+
+        [TestMethod]
+        public void ChangePassword_WhenDataIsValid_ShouldUpdateTheUser()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.Created, secondResponse.StatusCode);
+
+                var existingUser = this.db.Users.GetById(userLoggedModel.Id);
+                Assert.AreEqual(updateUser.NewAuthCode, existingUser.AuthCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenOldAuthCodeIsInvalid_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = "InvalidAuthCode",
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenAuthCodesDotMatch_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+                    ConfirmNewAuthCode = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenPasswordIsNotEncrypted_TheAuthCodeIsSmaller_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength - 1),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength - 1)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenPasswordIsNotEncrypted_TheAuthCodeIsBigger_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength + 1),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength + 1)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenOldAuthCodeIsNull_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenNewAuthCodeIsNull_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenConfirmNewAuthCodeIsNull_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenOldAuthCodeIsEmptyString_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = string.Empty,
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenOldAuthCodeIsWhiteSpace_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = "     ",
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenNewAuthCodeIsEmptyString_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = string.Empty,
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenNewAuthCodeIsWhiteSpace_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = "    ",
+                    ConfirmNewAuthCode = new string('a', Sha1PasswordLength)
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenConfirmNewAuthCodeIsEmptyString_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = string.Empty,
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenConfirmNewAuthCodeIsWhiteSpace_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmNewAuthCode = "   ",
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenAuthCodeAndConfirmAuthCodeAreBothNull_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenAuthCodeAndConfirmAuthCodeAreBothEmpty_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = string.Empty,
+                    ConfirmNewAuthCode = string.Empty
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void ChangePassword_WhenAuthCodeAndConfirmAuthCodeAreBothWhiteSpace_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                UserRegisterModel regUser = new UserRegisterModel()
+                {
+                    FirstName = "Denis",
+                    LastName = "Rizov",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    ConfirmAuthCode = new string('a', Sha1PasswordLength),
+                    Email = "dbrizov@yahoo.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var firstResponse = httpServer.CreatePostRequest("/api/users/register", regUser);
+                Assert.AreEqual(HttpStatusCode.Created, firstResponse.StatusCode);
+                Assert.IsNotNull(firstResponse.Content);
+
+                var contentString = firstResponse.Content.ReadAsStringAsync().Result;
+                var userLoggedModel = JsonConvert.DeserializeObject<UserLoggedModel>(contentString);
+                Assert.AreEqual("Denis Rizov", userLoggedModel.DisplayName);
+                Assert.IsTrue(userLoggedModel.Id > 0);
+                Assert.IsNotNull(userLoggedModel.SessionKey);
+
+                UserChangePasswordModel updateUser = new UserChangePasswordModel()
+                {
+                    OldAuthCode = regUser.AuthCode,
+                    NewAuthCode = "  ",
+                    ConfirmNewAuthCode = "  "
+                };
+
+                var secondResponse = httpServer.CreatePutRequest(
+                    "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
+                Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
+            }
+        }
     }
 }
