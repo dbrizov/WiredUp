@@ -37,7 +37,7 @@ namespace WiredUpWebApi.Controllers
 
                 if (receiver == null)
                 {
-                    throw new InvalidOperationException("The 'recieverId' is invalid");
+                    throw new ArgumentException("The 'recieverId' is invalid");
                 }
 
                 this.ValidateMessageContent(model.Content);
@@ -87,7 +87,7 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("all")]
-        public IEnumerable<MessageDetailedModel> GetAll([FromUri]string sessionKey)
+        public IEnumerable<MessageDetailedModel> GetAllMessages([FromUri]string sessionKey)
         {
             var user = this.GetUserBySessionKey(sessionKey);
             var sentMessages = user.SentMessages.Select(MessageDetailedModel.FromMessage.Compile());
@@ -98,6 +98,27 @@ namespace WiredUpWebApi.Controllers
             allMessages.AddRange(receviedMessages);
 
             return allMessages;
+        }
+
+        [HttpDelete]
+        [ActionName("delete")]
+        public HttpResponseMessage DeleteMessage([FromUri]int id, [FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                if (!this.IsSessionKeyValid(sessionKey))
+                {
+                    throw new ArgumentException("Invalid session key");
+                }
+
+                this.db.Messages.Delete(id);
+                this.db.SaveChanges();
+
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
+                return response;
+            });
+
+            return responseMsg;
         }
 
         private void ValidateMessageContent(string messageContent)

@@ -15,7 +15,7 @@ namespace WiredUpWebApi.Data
 
         void Delete(T entity);
 
-        void Delete(object id);
+        void Delete(int id);
 
         void Detach(T entity);
     }

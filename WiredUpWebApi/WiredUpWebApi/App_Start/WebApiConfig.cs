@@ -18,10 +18,11 @@ namespace WiredUpWebApi
 
             config.Routes.MapHttpRoute(
                 name: "MessagesApi",
-                routeTemplate: "api/messages/{action}",
+                routeTemplate: "api/messages/{action}/{id}",
                 defaults: new
                 {
-                    controller = "messages"
+                    controller = "messages",
+                    id = RouteParameter.Optional
                 }
             );
 

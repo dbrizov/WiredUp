@@ -42,10 +42,19 @@ namespace WiredUpWebApi.Controllers
 
             if (user == null)
             {
-                throw new InvalidOperationException("Invalid session key");
+                throw new ArgumentException("Invalid session key");
             }
 
             return user;
+        }
+
+        protected bool IsSessionKeyValid(string sessionKey)
+        {
+            var user = this.db.Users.All().Where(
+                    u => u.SessionKey == sessionKey).FirstOrDefault();
+
+            bool isValid = user != null;
+            return isValid;
         }
     }
 }

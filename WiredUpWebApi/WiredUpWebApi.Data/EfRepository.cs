@@ -69,7 +69,7 @@ namespace WiredUpWebApi.Data
             }
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(int id)
         {
             var entity = this.entities.Find(id);
 
