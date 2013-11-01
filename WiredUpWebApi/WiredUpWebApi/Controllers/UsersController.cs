@@ -25,16 +25,14 @@ namespace WiredUpWebApi.Controllers
         private const string SessionKeyChars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
         private const int SessionKeyLength = UserConstants.SessionKeyMaxLength;
 
-        private readonly IUnitOfWorkData db;
-
         public UsersController()
-            : this(new UnitOfWorkData())
+            : base()
         {
         }
 
         public UsersController(IUnitOfWorkData db)
+            : base(db)
         {
-            this.db = db;
         }
 
         [HttpPost]
@@ -130,13 +128,7 @@ namespace WiredUpWebApi.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                var user = this.db.Users.All().Where(
-                    u => u.SessionKey == sessionKey).FirstOrDefault();
-
-                if (user == null)
-                {
-                    throw new InvalidOperationException("The user is not logged in");
-                }
+                var user = this.GetUserBySessionKey(sessionKey);
 
                 user.SessionKey = null;
                 this.db.Users.Update(user);
