@@ -144,9 +144,27 @@ namespace WiredUpWebApi.Controllers
 
         [HttpPut]
         [ActionName("changepassword")]
-        public HttpResponseMessage ChangePasswordOfUser([FromBody]UserChangePasswordModel model, [FromUri]string sessionKey)
+        public HttpResponseMessage ChangePasswordOfUser(
+            [FromBody]UserChangePasswordModel model, [FromUri]string sessionKey)
         {
-            throw new NotImplementedException();
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = this.GetUserBySessionKey(sessionKey);
+
+                string userOldAuthCode = user.AuthCode;
+                this.ValidateAuthCodesMatch(userOldAuthCode, model.OldAuthCode);
+                this.ValidateAuthCodesMatch(model.NewAuthCode, model.ConfirmNewAuthCode);
+                this.ValidateAuthCode(model.NewAuthCode);
+
+                user.AuthCode = model.NewAuthCode;
+                this.db.Users.Update(user);
+                this.db.SaveChanges();
+
+                var response = this.Request.CreateResponse(HttpStatusCode.Created);
+                return response;
+            });
+
+            return responseMsg;
         }
 
         private string GenerateSessionKey(int userId)
