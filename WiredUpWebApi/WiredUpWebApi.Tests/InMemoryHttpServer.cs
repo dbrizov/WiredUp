@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
-using WiredUpWebApi.Data;
 
 namespace WiredUpWebApi.Tests
 {
@@ -14,7 +13,7 @@ namespace WiredUpWebApi.Tests
         private readonly HttpClient client;
         private readonly string baseUrl;
 
-        public InMemoryHttpServer(string baseUrl, IUnitOfWorkData db)
+        public InMemoryHttpServer(string baseUrl)
         {
             this.baseUrl = baseUrl;
             var config = new HttpConfiguration();
