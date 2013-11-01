@@ -75,6 +75,7 @@ namespace WiredUpWebApi.Controllers
 
                 var userLoggedModel = new UserLoggedModel()
                 {
+                    Id = newUser.Id,
                     DisplayName = newUser.FirstName + " " + newUser.LastName,
                     SessionKey = newUser.SessionKey
                 };
@@ -111,6 +112,7 @@ namespace WiredUpWebApi.Controllers
 
                 var userLoggedModel = new UserLoggedModel()
                 {
+                    Id = user.Id,
                     DisplayName = user.FirstName + " " + user.LastName,
                     SessionKey = user.SessionKey
                 };
