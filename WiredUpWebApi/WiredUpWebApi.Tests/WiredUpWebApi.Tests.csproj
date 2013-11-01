@@ -75,6 +75,10 @@
       <Project>{563835D5-9903-4F03-9125-B77D2FEAE640}</Project>
       <Name>WiredUpWebApi.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WiredUpWebApi.Models\WiredUpWebApi.Models.csproj">
+      <Project>{a36dc8f8-1c9f-44fa-97ff-f74997a8eb65}</Project>
+      <Name>WiredUpWebApi.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WiredUpWebApi\WiredUpWebApi.csproj">
       <Project>{a9c3c9a3-d72f-4080-8651-06016bd0e516}</Project>
       <Name>WiredUpWebApi</Name>
