@@ -44,6 +44,7 @@ namespace WiredUpWebApi.Controllers
                 this.ValidateFirstName(model.FirstName);
                 this.ValidateLastName(model.LastName);
                 this.ValidateEmail(model.Email);
+                this.ValidateAuthCodesMatch(model.AuthCode, model.ConfirmAuthCode);
                 this.ValidateAuthCode(model.AuthCode);
 
                 string emailToLower = model.Email.ToLower();
@@ -141,6 +142,13 @@ namespace WiredUpWebApi.Controllers
             return responseMsg;
         }
 
+        [HttpPut]
+        [ActionName("changepassword")]
+        public HttpResponseMessage ChangePasswordOfUser([FromBody]UserChangePasswordModel model, [FromUri]string sessionKey)
+        {
+            throw new NotImplementedException();
+        }
+
         private string GenerateSessionKey(int userId)
         {
             Random rand = new Random();
@@ -161,6 +169,14 @@ namespace WiredUpWebApi.Controllers
             if (string.IsNullOrWhiteSpace(authCode) || authCode.Length != Sha1PasswordLength)
             {
                 throw new ArgumentException("Password must be SHA1 encrypted");
+            }
+        }
+
+        private void ValidateAuthCodesMatch(string authCode, string confirmAuthCode)
+        {
+            if (authCode != confirmAuthCode)
+            {
+                throw new ArgumentException("The authentication codes don't match");
             }
         }
 

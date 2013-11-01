@@ -158,6 +158,7 @@
     </Compile>
     <Compile Include="Models\MessageModels\MessageDetailedModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />
+    <Compile Include="Models\UserModels\UserChangePasswordModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
     <Compile Include="Models\UserModels\UserLoginModel.cs" />
     <Compile Include="Models\UserModels\UserRegisterModel.cs" />

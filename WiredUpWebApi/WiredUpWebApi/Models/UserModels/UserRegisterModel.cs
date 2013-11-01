@@ -18,5 +18,8 @@ namespace WiredUpWebApi.Models.UserModels
 
         [DataMember(Name = "authCode")]
         public string AuthCode { get; set; }
+
+        [DataMember(Name = "confirmAuthCode")]
+        public string ConfirmAuthCode { get; set; }
     }
 }
