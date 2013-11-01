@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiredUpWebApi.Models", "Wir
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiredUpWebApi.Data", "WiredUpWebApi.Data\WiredUpWebApi.Data.csproj", "{563835D5-9903-4F03-9125-B77D2FEAE640}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiredUpWebApi.Tests", "WiredUpWebApi.Tests\WiredUpWebApi.Tests.csproj", "{A9FDFE88-2699-4EBA-9BB0-C95CEE2C7EC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{563835D5-9903-4F03-9125-B77D2FEAE640}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{563835D5-9903-4F03-9125-B77D2FEAE640}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{563835D5-9903-4F03-9125-B77D2FEAE640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FDFE88-2699-4EBA-9BB0-C95CEE2C7EC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9FDFE88-2699-4EBA-9BB0-C95CEE2C7EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9FDFE88-2699-4EBA-9BB0-C95CEE2C7EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9FDFE88-2699-4EBA-9BB0-C95CEE2C7EC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
