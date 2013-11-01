@@ -8,7 +8,9 @@ using Newtonsoft.Json;
 namespace WiredUpWebApi.Tests
 {
     [TestClass]
+#if !DEBUG
     [Ignore]
+#endif
     public class UsersControllerIntegrationTests
     {
         [TestMethod]
