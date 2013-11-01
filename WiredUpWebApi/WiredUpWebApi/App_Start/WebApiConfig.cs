@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -18,12 +17,20 @@ namespace WiredUpWebApi
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "MessagesApi",
+                routeTemplate: "api/messages/{action}",
+                defaults: new
+                {
+                    controller = "messages"
+                }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "UsersApi",
                 routeTemplate: "api/users/{action}",
                 defaults: new
                 {
-                    controller = "users",
-                    action = "all"
+                    controller = "users"
                 }
             );
 

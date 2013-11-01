@@ -7,9 +7,6 @@ namespace WiredUpWebApi.Models.MessageModels
     [DataContract]
     public class MessageSendModel
     {
-        [DataMember(Name = "senderId")]
-        public int SenderId { get; set; }
-
         [DataMember(Name = "receiverId")]
         public int ReceiverId { get; set; }
 

@@ -134,7 +134,7 @@ namespace WiredUpWebApi.Controllers
                 this.db.Users.Update(user);
                 this.db.SaveChanges();
 
-                var response = this.Request.CreateResponse(HttpStatusCode.OK, (object)null);
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
                 return response;
             });
 

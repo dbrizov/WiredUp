@@ -150,11 +150,13 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\MessageModels\MessageSendModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
     <Compile Include="Models\UserModels\UserLoginModel.cs" />
     <Compile Include="Models\UserModels\UserRegisterModel.cs" />
