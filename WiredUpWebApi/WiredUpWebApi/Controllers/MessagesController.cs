@@ -116,12 +116,18 @@ namespace WiredUpWebApi.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                if (!this.IsSessionKeyValid(sessionKey))
+                var user = this.GetUserBySessionKey(sessionKey);
+                var message = user.SentMessages.FirstOrDefault(m => m.Id == id);
+                if (message == null)
                 {
-                    throw new ArgumentException("Invalid session key");
+                    message = user.ReceivedMessages.FirstOrDefault(m => m.Id == id);
+                    if (message == null)
+                    {
+                        throw new ArgumentException("The user does not have a message with the requested id, or the message is not his");
+                    }
                 }
 
-                this.db.Messages.Delete(id);
+                this.db.Messages.Delete(message);
                 this.db.SaveChanges();
 
                 var response = this.Request.CreateResponse(HttpStatusCode.OK);
