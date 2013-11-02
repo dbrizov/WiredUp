@@ -78,6 +78,29 @@ namespace WiredUpWebApi.Controllers
             return posts;
         }
 
+        [HttpGet]
+        [ActionName("details")]
+        public UserPostModel GetSingle([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
+        {
+            if (!this.IsSessionKeyValid(sessionKey))
+            {
+                throw new ArgumentException("Invalid session key");
+            }
+
+            var post = this.db.UserPosts
+                .All()
+                .Where(p => p.Id == id && p.UserId == userId)
+                .Select(UserPostModel.FromUserPost)
+                .FirstOrDefault();
+
+            if (post == null)
+            {
+                throw new ArgumentException("A post with such id does not exist", "id");
+            }
+
+            return post;
+        }
+
         private void ValidatePostContent(string content)
         {
             if (string.IsNullOrWhiteSpace(content))

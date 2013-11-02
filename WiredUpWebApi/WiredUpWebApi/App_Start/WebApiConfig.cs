@@ -18,7 +18,7 @@ namespace WiredUpWebApi
 
             config.Routes.MapHttpRoute(
                 name: "UserPostsApi",
-                routeTemplate: "api/userposts/{action}/{id}",
+                routeTemplate: "api/userposts/{id}/{action}",
                 defaults: new
                 {
                     controller = "userposts",
