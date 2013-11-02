@@ -62,7 +62,7 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("all")]
-        public IQueryable<UserPostModel> GetAll([FromUri]int userId, [FromUri]string sessionKey)
+        public IQueryable<UserPostModel> GetAllPosts([FromUri]int userId, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
             {
@@ -80,7 +80,7 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("details")]
-        public UserPostModel GetSingle([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
+        public UserPostModel GetSinglePost([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
             {
@@ -99,6 +99,32 @@ namespace WiredUpWebApi.Controllers
             }
 
             return post;
+        }
+
+        [HttpPut]
+        [ActionName("edit")]
+        public HttpResponseMessage EditPost([FromBody]UserPostUpdateModel model, [FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                this.ValidatePostContent(model.Content);
+
+                var user = this.GetUserBySessionKey(sessionKey);
+                var post = user.Posts.FirstOrDefault(p => p.Id == model.Id);
+                if (post == null)
+                {
+                    throw new ArgumentException("The user does not have a post with such id", "id");
+                }
+
+                post.Content = model.Content;
+                this.db.UserPosts.Update(post);
+                this.db.SaveChanges();
+
+                var response = this.Request.CreateResponse(HttpStatusCode.Created);
+                return response;
+            });
+
+            return responseMsg;
         }
 
         private void ValidatePostContent(string content)
