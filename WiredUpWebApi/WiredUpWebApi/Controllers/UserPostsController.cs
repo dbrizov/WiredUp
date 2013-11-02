@@ -79,7 +79,7 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("details")]
-        public UserPostModel GetSinglePost([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
+        public UserPostModel GetPostDetails([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
             {

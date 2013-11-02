@@ -200,6 +200,283 @@ namespace WiredUpWebApi.Tests
             }
         }
 
+        [TestMethod]
+        public void GetAllPosts_WhenGettingPostsOfOtherUser_ShouldReturnCorrectNumberOfPosts()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.Users.Add(this.secondUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/all?userId={0}&sessionKey={1}",
+                        this.firstUser.Id, this.secondUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var posts = this.GetPostsFromResponse(response);
+                Assert.IsNotNull(posts);
+                Assert.AreEqual(2, posts.Count());
+            }
+        }
+
+        [TestMethod]
+        public void GetAllPosts_WhenUserIdIsInvalid_ShouldReturnZeroPosts()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/all?userId={0}&sessionKey={1}",
+                        0, this.firstUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var posts = this.GetPostsFromResponse(response);
+                Assert.IsNotNull(posts);
+                Assert.AreEqual(0, posts.Count());
+            }
+        }
+
+        [TestMethod]
+        public void GetAllPosts_WhenSesionKeyIsInvalid_ShouldReturnInternalServerError()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/all?userId={0}&sessionKey={1}",
+                        this.firstUser.Id, "invalidSesionKey"));
+                Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void GetPostDetails_WhenDataIsValid_ShouldReturnStatusCodeOK()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Another content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
+                        secondPost.Id, this.firstUser.Id, this.firstUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var post = this.GetUserPostModelFromResponse(response);
+                Assert.IsNotNull(post);
+                Assert.AreEqual(secondPost.Id, post.Id);
+                Assert.AreEqual(this.firstUser.FirstName + " " + this.firstUser.LastName, post.PostedBy);
+                Assert.AreEqual(secondPost.Content, post.Content);
+            }
+        }
+
+        [TestMethod]
+        public void GetPostDetails_WhenPostIdIsInvalid_ShouldReturnInternalServerError()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Another content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
+                        0, this.firstUser.Id, this.firstUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void GetPostDetails_WhenSessionKeyIsInvalid_ShouldReturnInternalServerError()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var firstPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                var secondPost = new UserPost()
+                {
+                    Content = "Another content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
+                        secondPost.Id, this.firstUser.Id, "invalidSessionKey"));
+                Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+            }
+        }
+
+        [Ignore]
+        [TestMethod]
+        public void EditPost_WhenDataIsValid_ShouldEditThePost()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var newPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(newPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                var editPostModel = new UserPostUpdateModel()
+                {
+                    Id = newPost.Id,
+                    Content = "New Content"
+                };
+
+                var response = this.httpServer.CreatePutRequest(
+                    "/api/userposts/edit?sessionKey=" + this.firstUser.SessionKey, editPostModel);
+                Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+
+                var post = this.db.UserPosts.GetById(newPost.Id);
+                Assert.AreEqual(editPostModel.Content, post.Content);
+            }
+        }
+
+        [TestMethod]
+        public void DeletePost_WhenDataIsValid_ShouldDeleteThePost()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.SaveChanges();
+
+                var newPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(newPost);
+                this.db.Users.Update(this.firstUser);
+                this.db.SaveChanges();
+
+                int postsCount = this.db.UserPosts.All().Count();
+
+                var response = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/userposts/delete?id={0}&sessionKey={1}",
+                        newPost.Id, this.firstUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                Assert.IsTrue(postsCount - 1 == this.db.UserPosts.All().Count());
+            }
+        }
+
         private UserPostModel GetUserPostModelFromResponse(HttpResponseMessage response)
         {
             string modelAsString = response.Content.ReadAsStringAsync().Result;
