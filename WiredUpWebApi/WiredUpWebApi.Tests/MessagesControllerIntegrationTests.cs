@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Transactions;
 using WiredUpWebApi.Data;
+using WiredUpWebApi.Models;
 using WiredUpWebApi.Models.Constants;
 using WiredUpWebApi.Models.MessageModels;
 using WiredUpWebApi.Models.UserModels;
@@ -334,50 +335,149 @@ namespace WiredUpWebApi.Tests
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void DeleteMessage_WhenDataIsValid_ShouldDeleteFromDatabase()
         {
             using (new TransactionScope())
             {
-                var firstResponse = this.httpServer.CreatePostRequest("/api/users/register", this.firstUser);
-                var secondResponse = this.httpServer.CreatePostRequest("/api/users/register", this.secondUser);
-
-                var firstLoggedUser = this.GetUserFromResponse(firstResponse);
-                var secondLoggedUser = this.GetUserFromResponse(secondResponse);
-
-                var message = new MessageSendModel()
+                var userOne = new User()
                 {
-                    Content = "Some content",
-                    ReceiverId = secondLoggedUser.Id
+                    FirstName = this.firstUser.FirstName,
+                    LastName = this.firstUser.LastName,
+                    AuthCode = this.firstUser.AuthCode,
+                    Email = this.firstUser.Email
                 };
 
-                // Send the message
-                var response = this.httpServer.CreatePostRequest(
-                    "/api/messages/send?sessionKey=" + firstLoggedUser.SessionKey, message);
-                Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+                var userTwo = new User()
+                {
+                    FirstName = this.secondUser.FirstName,
+                    LastName = this.secondUser.LastName,
+                    AuthCode = this.secondUser.AuthCode,
+                    Email = this.secondUser.Email
+                };
 
-                // Get the message entity
-                var firstUser = this.db.Users.GetById(firstLoggedUser.Id);
-                Assert.AreEqual(1, firstUser.SentMessages.Count);
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
 
-                var secondUser = this.db.Users.GetById(secondLoggedUser.Id);
-                Assert.AreEqual(1, secondUser.ReceivedMessages.Count);
+                var message = new Message()
+                {
+                    Sender = userOne,
+                    Receiver = userTwo,
+                    Content = "Valid content"
+                };
+
+                this.db.Messages.Add(message);
+                this.db.SaveChanges();
+
+                int messagesCount = this.db.Messages.All().Count();
 
                 // Delete the message
-                var deleteResponse = this.httpServer.CreateDeleteRequest(
+                var response = this.httpServer.CreateDeleteRequest(
                     string.Format(
-                        "/api/messages/delete/{0}?sessionKey={1}",
-                        firstUser.SentMessages.ElementAt(0).Id,
-                        firstLoggedUser.SessionKey));
-                Assert.AreEqual(HttpStatusCode.OK, deleteResponse.StatusCode);
+                        "/api/messages/delete?id={0}&sessionKey={1}",
+                        message.Id, userOne.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
-                // Check if message was delete
-                firstUser = this.db.Users.GetById(firstLoggedUser.Id);
-                Assert.AreEqual(0, firstUser.SentMessages.Count);
+                // Check if message was deleted
+                Assert.AreEqual(messagesCount - 1, this.db.Messages.All().Count());
+            }
+        }
 
-                secondUser = this.db.Users.GetById(secondLoggedUser.Id);
-                Assert.AreEqual(0, secondUser.ReceivedMessages.Count);
+        [TestMethod]
+        public void DeleteMessage_WhenDeletingMessageOfOtherUser_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = this.firstUser.FirstName,
+                    LastName = this.firstUser.LastName,
+                    AuthCode = this.firstUser.AuthCode,
+                    Email = this.firstUser.Email
+                };
+
+                var userTwo = new User()
+                {
+                    FirstName = this.secondUser.FirstName,
+                    LastName = this.secondUser.LastName,
+                    AuthCode = this.secondUser.AuthCode,
+                    Email = this.secondUser.Email
+                };
+
+                var userThree = new User()
+                {
+                    FirstName = "Jorkata",
+                    LastName = "Prosto Joro",
+                    AuthCode = this.firstUser.AuthCode,
+                    Email = "jorkata@asd.com"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.Users.Add(userThree);
+                this.db.SaveChanges();
+
+                var message = new Message()
+                {
+                    Sender = userTwo,
+                    Receiver = userThree,
+                    Content = "Valid content"
+                };
+
+                this.db.Messages.Add(message);
+                this.db.SaveChanges();
+
+                // Delete the message
+                var response = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/messages/delete?id={0}&sessionKey={1}",
+                        message.Id, userOne.SessionKey));
+                Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void DeleteMessage_WhenSessionKeyIsInvalid_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = this.firstUser.FirstName,
+                    LastName = this.firstUser.LastName,
+                    AuthCode = this.firstUser.AuthCode,
+                    Email = this.firstUser.Email
+                };
+
+                var userTwo = new User()
+                {
+                    FirstName = this.secondUser.FirstName,
+                    LastName = this.secondUser.LastName,
+                    AuthCode = this.secondUser.AuthCode,
+                    Email = this.secondUser.Email
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var message = new Message()
+                {
+                    Sender = userOne,
+                    Receiver = userTwo,
+                    Content = "Valid content"
+                };
+
+                this.db.Messages.Add(message);
+                this.db.SaveChanges();
+
+                // Delete the message
+                var response = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/messages/delete?id={0}&sessionKey={1}",
+                        message.Id, "invalidSessionKey"));
+                Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             }
         }
 
