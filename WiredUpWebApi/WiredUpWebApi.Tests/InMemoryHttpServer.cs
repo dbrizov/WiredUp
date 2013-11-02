@@ -64,6 +64,18 @@ namespace WiredUpWebApi.Tests
             return response;
         }
 
+        public HttpResponseMessage CreateDeleteRequest(string requestUrl, string mediaType = "application/json")
+        {
+            var url = requestUrl;
+            var request = new HttpRequestMessage();
+            request.RequestUri = new Uri(baseUrl + url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
+            request.Method = HttpMethod.Delete;
+
+            var response = this.client.SendAsync(request).Result;
+            return response;
+        }
+
         private void AddHttpRoutes(HttpRouteCollection routeCollection)
         {
             var routes = GetRoutes();

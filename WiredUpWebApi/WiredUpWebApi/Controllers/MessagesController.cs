@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -66,37 +67,47 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("sent")]
-        public IEnumerable<MessageDetailedModel> GetSentMessage([FromUri]string sessionKey)
+        public IQueryable<MessageModel> GetSentMessage([FromUri]string sessionKey)
         {
             var user = this.GetUserBySessionKey(sessionKey);
-            var messages = user.SentMessages.Select(MessageDetailedModel.FromMessage.Compile());
+            var messages = this.db.Messages
+                .All()
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .Where(m => m.SenderId == user.Id)
+                .Select(MessageModel.FromMessage);
 
             return messages;
         }
 
         [HttpGet]
         [ActionName("received")]
-        public IEnumerable<MessageDetailedModel> GetReceivedMessages([FromUri]string sessionKey)
+        public IQueryable<MessageModel> GetReceivedMessages([FromUri]string sessionKey)
         {
             var user = this.GetUserBySessionKey(sessionKey);
-            var messages = user.ReceivedMessages.Select(MessageDetailedModel.FromMessage.Compile());
+            var messages = this.db.Messages
+                .All()
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .Where(m => m.ReceiverId == user.Id)
+                .Select(MessageModel.FromMessage);
 
             return messages;
         }
 
         [HttpGet]
         [ActionName("all")]
-        public IEnumerable<MessageDetailedModel> GetAllMessages([FromUri]string sessionKey)
+        public IQueryable<MessageModel> GetAllMessages([FromUri]string sessionKey)
         {
             var user = this.GetUserBySessionKey(sessionKey);
-            var sentMessages = user.SentMessages.Select(MessageDetailedModel.FromMessage.Compile());
-            var receviedMessages = user.ReceivedMessages.Select(MessageDetailedModel.FromMessage.Compile());
+            var messages = this.db.Messages
+                .All()
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .Where(m => m.ReceiverId == user.Id || m.SenderId == user.Id)
+                .Select(MessageModel.FromMessage);
 
-            var allMessages = new List<MessageDetailedModel>();
-            allMessages.AddRange(sentMessages);
-            allMessages.AddRange(receviedMessages);
-
-            return allMessages;
+            return messages;
         }
 
         [HttpDelete]

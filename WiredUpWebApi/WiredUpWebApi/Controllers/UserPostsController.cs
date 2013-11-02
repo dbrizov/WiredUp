@@ -32,7 +32,6 @@ namespace WiredUpWebApi.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-
                 this.ValidatePostContent(model.Content);
 
                 var user = this.GetUserBySessionKey(sessionKey);

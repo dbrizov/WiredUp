@@ -253,7 +253,7 @@ namespace WiredUpWebApi.Tests
                 Assert.AreEqual(HttpStatusCode.OK, sentResponse.StatusCode);
 
                 var messagesAsString = sentResponse.Content.ReadAsStringAsync().Result;
-                var messages = JsonConvert.DeserializeObject<IList<MessageDetailedModel>>(messagesAsString);
+                var messages = JsonConvert.DeserializeObject<IList<MessageModel>>(messagesAsString);
                 Assert.AreEqual(1, messages.Count);
                 Assert.AreEqual(message.Content, messages[0].Content);
                 Assert.AreEqual(firstLoggedUser.DisplayName, messages[0].SenderName);
@@ -289,7 +289,7 @@ namespace WiredUpWebApi.Tests
                 Assert.AreEqual(HttpStatusCode.OK, receivedResponse.StatusCode);
 
                 var messagesAsString = receivedResponse.Content.ReadAsStringAsync().Result;
-                var messages = JsonConvert.DeserializeObject<IList<MessageDetailedModel>>(messagesAsString);
+                var messages = JsonConvert.DeserializeObject<IList<MessageModel>>(messagesAsString);
                 Assert.AreEqual(1, messages.Count);
                 Assert.AreEqual(message.Content, messages[0].Content);
                 Assert.AreEqual(firstLoggedUser.DisplayName, messages[0].SenderName);
@@ -329,8 +329,55 @@ namespace WiredUpWebApi.Tests
                 Assert.AreEqual(HttpStatusCode.OK, getAllResponse.StatusCode);
 
                 var messagesAsString = getAllResponse.Content.ReadAsStringAsync().Result;
-                var messages = JsonConvert.DeserializeObject<IList<MessageDetailedModel>>(messagesAsString);
+                var messages = JsonConvert.DeserializeObject<IList<MessageModel>>(messagesAsString);
                 Assert.AreEqual(2, messages.Count);
+            }
+        }
+
+        [Ignore]
+        [TestMethod]
+        public void DeleteMessage_WhenDataIsValid_ShouldDeleteFromDatabase()
+        {
+            using (new TransactionScope())
+            {
+                var firstResponse = this.httpServer.CreatePostRequest("/api/users/register", this.firstUser);
+                var secondResponse = this.httpServer.CreatePostRequest("/api/users/register", this.secondUser);
+
+                var firstLoggedUser = this.GetUserFromResponse(firstResponse);
+                var secondLoggedUser = this.GetUserFromResponse(secondResponse);
+
+                var message = new MessageSendModel()
+                {
+                    Content = "Some content",
+                    ReceiverId = secondLoggedUser.Id
+                };
+
+                // Send the message
+                var response = this.httpServer.CreatePostRequest(
+                    "/api/messages/send?sessionKey=" + firstLoggedUser.SessionKey, message);
+                Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+
+                // Get the message entity
+                var firstUser = this.db.Users.GetById(firstLoggedUser.Id);
+                Assert.AreEqual(1, firstUser.SentMessages.Count);
+
+                var secondUser = this.db.Users.GetById(secondLoggedUser.Id);
+                Assert.AreEqual(1, secondUser.ReceivedMessages.Count);
+
+                // Delete the message
+                var deleteResponse = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/messages/delete/{0}?sessionKey={1}",
+                        firstUser.SentMessages.ElementAt(0).Id,
+                        firstLoggedUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+                // Check if message was delete
+                firstUser = this.db.Users.GetById(firstLoggedUser.Id);
+                Assert.AreEqual(0, firstUser.SentMessages.Count);
+
+                secondUser = this.db.Users.GetById(secondLoggedUser.Id);
+                Assert.AreEqual(0, secondUser.ReceivedMessages.Count);
             }
         }
 
