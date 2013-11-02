@@ -16,7 +16,7 @@ namespace WiredUpWebApi.Tests
     {
         private const int Sha1PasswordLength = 40;
 
-        private IUnitOfWorkData db = new UnitOfWorkData();
+        private readonly IUnitOfWorkData db = new UnitOfWorkData();
 
         [TestMethod]
         public void Register_WhenDataIsValid_ShouldSaveInDatabase()
