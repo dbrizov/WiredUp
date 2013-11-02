@@ -171,15 +171,21 @@ namespace WiredUpWebApi.Tests
                 this.db.Users.Add(this.firstUser);
                 this.db.SaveChanges();
 
-                var newPost = new UserPost()
+                var firstPost = new UserPost()
                 {
                     Content = "Content",
-                    PostDate = DateTime.Now,
-                    User = this.firstUser
+                    PostDate = DateTime.Now
                 };
 
-                this.db.UserPosts.Add(newPost);
-                this.db.UserPosts.Add(newPost);
+                var secondPost = new UserPost()
+                {
+                    Content = "Content",
+                    PostDate = DateTime.Now
+                };
+
+                this.firstUser.Posts.Add(firstPost);
+                this.firstUser.Posts.Add(secondPost);
+                this.db.Users.Update(this.firstUser);
                 this.db.SaveChanges();
 
                 var response = this.httpServer.CreateGetRequest(

@@ -86,6 +86,16 @@ namespace WiredUpWebApi.Tests
         {
             return new List<Route>
             {
+
+                new Route(
+                    "UserPostsApi",
+                    "api/userposts/{action}/{id}",
+                    new
+                    {
+                        controller = "userposts",
+                        id = RouteParameter.Optional
+                    }),
+
                 new Route(
                     "MessagesApi",
                     "api/messages/{action}/{id}",
