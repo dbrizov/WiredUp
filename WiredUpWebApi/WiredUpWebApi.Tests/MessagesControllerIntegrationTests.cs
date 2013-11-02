@@ -45,7 +45,7 @@ namespace WiredUpWebApi.Tests
         };
 
         [TestMethod]
-        public void Send_WhenDataIsValid_ShouldSaveInDatabase()
+        public void SendMessage_WhenDataIsValid_ShouldSaveInDatabase()
         {
             using (new TransactionScope())
             {
@@ -78,7 +78,7 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void Send_TwoValidMessages_ShouldSaveInDatabase()
+        public void SendMessage_TwoValidMessages_ShouldSaveInDatabase()
         {
             using (new TransactionScope())
             {
@@ -113,7 +113,7 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void Send_WhenReceiverIdIsInvalid_ShouldReturnBadRequest()
+        public void SendMessage_WhenReceiverIdIsInvalid_ShouldReturnBadRequest()
         {
             using (new TransactionScope())
             {
@@ -136,7 +136,7 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void Send_WhentContentIsTooBig_ShouldReturnBadRequest()
+        public void SendMessage_WhentContentIsTooBig_ShouldReturnBadRequest()
         {
             using (new TransactionScope())
             {
@@ -159,7 +159,7 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void Send_WhenContentIsNull_ShouldReturnBadRequest()
+        public void SendMessage_WhenContentIsNull_ShouldReturnBadRequest()
         {
             using (new TransactionScope())
             {
@@ -181,7 +181,7 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void Send_WhenContentIsWhiteSpace_ShouldReturnBadRequest()
+        public void SendMessage_WhenContentIsWhiteSpace_ShouldReturnBadRequest()
         {
             using (new TransactionScope())
             {
@@ -394,7 +394,8 @@ namespace WiredUpWebApi.Tests
                     FirstName = this.firstUser.FirstName,
                     LastName = this.firstUser.LastName,
                     AuthCode = this.firstUser.AuthCode,
-                    Email = this.firstUser.Email
+                    Email = this.firstUser.Email,
+                    SessionKey = "first"
                 };
 
                 var userTwo = new User()
@@ -402,7 +403,8 @@ namespace WiredUpWebApi.Tests
                     FirstName = this.secondUser.FirstName,
                     LastName = this.secondUser.LastName,
                     AuthCode = this.secondUser.AuthCode,
-                    Email = this.secondUser.Email
+                    Email = this.secondUser.Email,
+                    SessionKey = "second"
                 };
 
                 var userThree = new User()
@@ -410,7 +412,8 @@ namespace WiredUpWebApi.Tests
                     FirstName = "Jorkata",
                     LastName = "Prosto Joro",
                     AuthCode = this.firstUser.AuthCode,
-                    Email = "jorkata@asd.com"
+                    Email = "jorkata@asd.com",
+                    SessionKey = "third"
                 };
 
                 this.db.Users.Add(userOne);

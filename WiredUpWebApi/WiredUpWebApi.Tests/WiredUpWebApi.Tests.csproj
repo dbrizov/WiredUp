@@ -69,6 +69,7 @@
     <Compile Include="InMemoryHttpServer.cs" />
     <Compile Include="MessagesControllerIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserPostsControllerIntegrationTests.cs" />
     <Compile Include="UsersControllerIntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
