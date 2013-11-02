@@ -127,6 +127,29 @@ namespace WiredUpWebApi.Controllers
             return responseMsg;
         }
 
+        [HttpDelete]
+        [ActionName("delete")]
+        public HttpResponseMessage DeletePost([FromUri]int id, [FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = this.GetUserBySessionKey(sessionKey);
+                var post = user.Posts.FirstOrDefault(p => p.Id == id);
+                if (post == null)
+                {
+                    throw new ArgumentException("The user does not have a post with such id");
+                }
+
+                this.db.UserPosts.Delete(post);
+                this.db.SaveChanges();
+
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
+                return response;
+            });
+
+            return responseMsg;
+        }
+
         private void ValidatePostContent(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
