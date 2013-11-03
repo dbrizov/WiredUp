@@ -163,12 +163,15 @@ namespace WiredUpWebApi.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                if (!this.IsSessionKeyValid(sessionKey))
+                var user = this.GetUserBySessionKey(sessionKey);
+                var project = user.Projects.FirstOrDefault(p => p.Id == id);
+                if (project == null)
                 {
-                    throw new ArgumentException("Invalid session key");
+                    throw new ArgumentException(
+                        "The user does not have such project, or you are trying to delete someone elses project");
                 }
 
-                this.db.Projects.Delete(id);
+                this.db.Projects.Delete(project);
                 this.db.SaveChanges();
 
                 var response = this.Request.CreateResponse(HttpStatusCode.OK);
