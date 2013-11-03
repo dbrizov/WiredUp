@@ -308,7 +308,6 @@ namespace WiredUpWebApi.Tests
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void DeleteProject_WhenDataIsValid_ShoulDeleteFromDatabase()
         {
@@ -336,9 +335,15 @@ namespace WiredUpWebApi.Tests
                         this.firstUser.SessionKey));
                 Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
-                Assert.AreEqual(0, this.firstUser.Projects.Count());
-                Assert.AreEqual(0, this.secondUser.Projects.Count());
-                Assert.IsNull(this.db.Projects.GetById(project.Id));
+                var firstUserProjects = this.db.Projects
+                    .All()
+                    .Where(p => p.TeamMembers.Any(tm => tm.Id == this.firstUser.Id));
+                Assert.AreEqual(0, firstUserProjects.Count());
+
+                var secondUserProjects = this.db.Projects
+                    .All()
+                    .Where(p => p.TeamMembers.Any(tm => tm.Id == this.secondUser.Id));
+                Assert.AreEqual(0, secondUserProjects.Count());
             }
         }
 
