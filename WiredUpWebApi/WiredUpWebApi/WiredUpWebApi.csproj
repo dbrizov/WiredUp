@@ -149,6 +149,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\CertificatesController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
@@ -159,6 +160,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CertificateModels\CertificateCreateModel.cs" />
+    <Compile Include="Models\CertificateModels\CertificateDetailedModel.cs" />
+    <Compile Include="Models\CertificateModels\CertificateEditModel.cs" />
+    <Compile Include="Models\CertificateModels\CertificateModel.cs" />
     <Compile Include="Models\MessageModels\MessageModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />
     <Compile Include="Models\ProjectModels\ProjectCreateModel.cs" />
