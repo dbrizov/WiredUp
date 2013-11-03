@@ -149,6 +149,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
@@ -160,6 +161,10 @@
     </Compile>
     <Compile Include="Models\MessageModels\MessageModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />
+    <Compile Include="Models\ProjectModels\ProjectCreateModel.cs" />
+    <Compile Include="Models\ProjectModels\ProjectDetailedModel.cs" />
+    <Compile Include="Models\ProjectModels\ProjectEditModel.cs" />
+    <Compile Include="Models\ProjectModels\ProjectModel.cs" />
     <Compile Include="Models\UserModels\UserChangePasswordModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
     <Compile Include="Models\UserModels\UserLoginModel.cs" />

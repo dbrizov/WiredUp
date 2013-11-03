@@ -141,7 +141,7 @@ namespace WiredUpWebApi.Controllers
         }
 
         [HttpPut]
-        [ActionName("changepassword")]
+        [ActionName("changePassword")]
         public HttpResponseMessage ChangePasswordOfUser(
             [FromBody]UserChangePasswordModel model, [FromUri]string sessionKey)
         {

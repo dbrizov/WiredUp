@@ -17,6 +17,16 @@ namespace WiredUpWebApi
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "ProjectsApi",
+                routeTemplate: "api/projects/{action}/{id}",
+                defaults: new
+                {
+                    controller = "projects",
+                    id = RouteParameter.Optional
+                }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "UserPostsApi",
                 routeTemplate: "api/userposts/{action}/{id}",
                 defaults: new
