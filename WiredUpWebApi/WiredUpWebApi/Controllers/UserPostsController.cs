@@ -72,7 +72,8 @@ namespace WiredUpWebApi.Controllers
                 .All()
                 .Include(p => p.User)
                 .Where(p => p.UserId == userId)
-                .Select(UserPostModel.FromUserPost);
+                .Select(UserPostModel.FromUserPost)
+                .OrderByDescending(p => p.PostDate);
 
             return posts;
         }
