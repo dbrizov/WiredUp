@@ -413,7 +413,6 @@ namespace WiredUpWebApi.Tests
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void EditPost_WhenDataIsValid_ShouldEditThePost()
         {
@@ -435,15 +434,19 @@ namespace WiredUpWebApi.Tests
                 var editPostModel = new UserPostUpdateModel()
                 {
                     Id = newPost.Id,
-                    Content = "New Content"
+                    Content = "jyfyufufhfghfghfhg"
                 };
 
                 var response = this.httpServer.CreatePutRequest(
                     "/api/userposts/edit?sessionKey=" + this.firstUser.SessionKey, editPostModel);
                 Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
 
-                var post = this.db.UserPosts.GetById(newPost.Id);
-                Assert.AreEqual(editPostModel.Content, post.Content);
+                var post = this.db.UserPosts
+                    .All()
+                    .Where(p => p.Content == "jyfyufufhfghfghfhg")
+                    .FirstOrDefault();
+                Assert.IsNotNull(post);
+                Assert.AreEqual(newPost.Id, post.Id);
             }
         }
 
