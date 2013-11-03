@@ -154,6 +154,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\SkillsController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\UserPostsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="Models\ProjectModels\ProjectDetailedModel.cs" />
     <Compile Include="Models\ProjectModels\ProjectEditModel.cs" />
     <Compile Include="Models\ProjectModels\ProjectModel.cs" />
+    <Compile Include="Models\SkillModels\SkillModel.cs" />
     <Compile Include="Models\UserModels\UserChangePasswordModel.cs" />
     <Compile Include="Models\UserModels\UserEditModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
