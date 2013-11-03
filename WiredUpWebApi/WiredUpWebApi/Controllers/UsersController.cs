@@ -167,7 +167,7 @@ namespace WiredUpWebApi.Controllers
         }
 
         [HttpPut]
-        [ActionName("editLanguages")]
+        [ActionName("edit")]
         public HttpResponseMessage EditLanguages([FromBody]UserEditModel model, string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
@@ -183,6 +183,8 @@ namespace WiredUpWebApi.Controllers
                 }
 
                 user.Languages = model.Languages;
+                user.CountryId = model.CountryId;
+                user.Photo = model.Photo;
                 this.db.Users.Update(user);
                 this.db.SaveChanges();
 

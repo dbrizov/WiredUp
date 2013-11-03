@@ -9,5 +9,11 @@ namespace WiredUpWebApi.Models.UserModels
     {
         [DataMember(Name = "languages")]
         public string Languages { get; set; }
+
+        [DataMember(Name = "countryId")]
+        public int CountryId { get; set; }
+
+        [DataMember(Name = "photo")]
+        public byte[] Photo { get; set; }
     }
 }
