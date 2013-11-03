@@ -66,6 +66,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CertificatesControllerIntegrationTests.cs" />
     <Compile Include="InMemoryHttpServer.cs" />
     <Compile Include="MessagesControllerIntegrationTests.cs" />
     <Compile Include="ProjectsControllerIntegrationTests.cs" />
