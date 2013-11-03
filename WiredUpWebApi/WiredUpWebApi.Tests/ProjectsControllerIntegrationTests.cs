@@ -347,6 +347,64 @@ namespace WiredUpWebApi.Tests
             }
         }
 
+        [TestMethod]
+        public void DeleteProject_WhenTryingToDeleteAProjectOfOtherUser_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.Users.Add(this.secondUser);
+                this.db.SaveChanges();
+
+                var project = new Project()
+                {
+                    Description = "desc",
+                    Url = "url",
+                    Name = "name",
+                    TeamMembers = new List<User>() { this.firstUser },
+                };
+
+                this.db.Projects.Add(project);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/projects/delete?id={0}&sessionKey={1}",
+                        project.Id,
+                        this.secondUser.SessionKey));
+                Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public void DeleteProject_WhenSessionKeyIsInvalid_ShouldReturnBadRequest()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.firstUser);
+                this.db.Users.Add(this.secondUser);
+                this.db.SaveChanges();
+
+                var project = new Project()
+                {
+                    Description = "desc",
+                    Url = "url",
+                    Name = "name",
+                    TeamMembers = new List<User>() { this.firstUser, this.secondUser },
+                };
+
+                this.db.Projects.Add(project);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateDeleteRequest(
+                    string.Format(
+                        "/api/projects/delete?id={0}&sessionKey={1}",
+                        project.Id,
+                        "invalid session key"));
+                Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            }
+        }
+
         private ProjectModel GetProjectFromResponse(HttpResponseMessage response)
         {
             var modelAsString = response.Content.ReadAsStringAsync().Result;
