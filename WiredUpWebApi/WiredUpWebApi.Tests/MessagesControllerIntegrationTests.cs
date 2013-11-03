@@ -345,7 +345,8 @@ namespace WiredUpWebApi.Tests
                     FirstName = this.firstUser.FirstName,
                     LastName = this.firstUser.LastName,
                     AuthCode = this.firstUser.AuthCode,
-                    Email = this.firstUser.Email
+                    Email = this.firstUser.Email,
+                    SessionKey = "first"
                 };
 
                 var userTwo = new User()
@@ -353,7 +354,8 @@ namespace WiredUpWebApi.Tests
                     FirstName = this.secondUser.FirstName,
                     LastName = this.secondUser.LastName,
                     AuthCode = this.secondUser.AuthCode,
-                    Email = this.secondUser.Email
+                    Email = this.secondUser.Email,
+                    SessionKey = "second"
                 };
 
                 this.db.Users.Add(userOne);
