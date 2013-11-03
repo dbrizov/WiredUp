@@ -71,6 +71,7 @@
     <Compile Include="MessagesControllerIntegrationTests.cs" />
     <Compile Include="ProjectsControllerIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkillsControllerIntegrationTests.cs" />
     <Compile Include="UserPostsControllerIntegrationTests.cs" />
     <Compile Include="UsersControllerIntegrationTests.cs" />
   </ItemGroup>

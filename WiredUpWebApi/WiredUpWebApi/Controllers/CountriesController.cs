@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;
 using WiredUpWebApi.Data;
 using WiredUpWebApi.Models.Constants;
 

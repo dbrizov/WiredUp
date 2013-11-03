@@ -12,7 +12,7 @@ namespace WiredUpWebApi.Controllers
 {
     public class SkillsController : BaseApiController
     {
-        public const int SkillNameMaxLength = SkillConstants.NameMaxLength;
+        private const int SkillNameMaxLength = SkillConstants.NameMaxLength;
 
         public SkillsController()
             : base()
@@ -72,11 +72,12 @@ namespace WiredUpWebApi.Controllers
         [HttpPut]
         [ActionName("remove")]
         // Removes a skill from the user only
-        public HttpResponseMessage RemoveSkill([FromUri]int id, [FromUri]string sessionKey)
+        public HttpResponseMessage RemoveSkill(
+            [FromBody]SkillModel model, [FromUri]string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                var skill = this.db.Skills.All().FirstOrDefault(s => s.Id == id);
+                var skill = this.db.Skills.All().FirstOrDefault(s => s.Id == model.Id);
                 if (skill == null)
                 {
                     throw new ArgumentException("The user does nothave such skill");
