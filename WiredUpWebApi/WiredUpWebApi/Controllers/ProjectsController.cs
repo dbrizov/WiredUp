@@ -12,9 +12,9 @@ namespace WiredUpWebApi.Controllers
 {
     public class ProjectsController : BaseApiController
     {
-        public const int ProjectNameMaxLength = ProjectConstants.NameMaxLength;
-        public const int ProjectDescriptionMaxLength = ProjectConstants.DescriptionMaxLength;
-        public const int ProjectUrlMaxLength = ProjectConstants.UrlMaxLength;
+        private const int ProjectNameMaxLength = ProjectConstants.NameMaxLength;
+        private const int ProjectDescriptionMaxLength = ProjectConstants.DescriptionMaxLength;
+        private const int ProjectUrlMaxLength = ProjectConstants.UrlMaxLength;
 
         public ProjectsController()
             : base()
