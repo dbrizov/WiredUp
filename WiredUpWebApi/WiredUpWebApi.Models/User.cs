@@ -45,7 +45,7 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<User> Connections { get; set; }
 
-        public virtual ICollection<Company> Followings { get; set; }
+        public virtual ICollection<Company> FollowedCompanies { get; set; }
 
         public virtual ICollection<Project> Projects { get; set; }
 
@@ -62,7 +62,7 @@ namespace WiredUpWebApi.Models
         public User()
         {
             this.Connections = new HashSet<User>();
-            this.Followings = new HashSet<Company>();
+            this.FollowedCompanies = new HashSet<Company>();
             this.Projects = new HashSet<Project>();
             this.Certificates = new HashSet<Certificate>();
             this.Skills = new HashSet<Skill>();

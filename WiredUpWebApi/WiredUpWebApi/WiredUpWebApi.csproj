@@ -166,6 +166,7 @@
     <Compile Include="Models\ProjectModels\ProjectEditModel.cs" />
     <Compile Include="Models\ProjectModels\ProjectModel.cs" />
     <Compile Include="Models\UserModels\UserChangePasswordModel.cs" />
+    <Compile Include="Models\UserModels\UserEditModel.cs" />
     <Compile Include="Models\UserModels\UserLoggedModel.cs" />
     <Compile Include="Models\UserModels\UserLoginModel.cs" />
     <Compile Include="Models\UserModels\UserRegisterModel.cs" />

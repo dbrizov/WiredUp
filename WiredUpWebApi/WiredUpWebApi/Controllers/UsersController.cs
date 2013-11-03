@@ -19,6 +19,7 @@ namespace WiredUpWebApi.Controllers
         private const int FirstNameMaxLength = UserConstants.FirstNameMaxLength;
         private const int LastNameMaxLength = UserConstants.LastNameMaxLength;
         private const int EmailMaxLength = UserConstants.EmailMaxLength;
+        private const int LanguagesMaxLength = UserConstants.LanguagesMaxLength;
         private const int Sha1PasswordLength = 40;
         private const string SessionKeyChars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
         private const int SessionKeyLength = UserConstants.SessionKeyMaxLength;
@@ -155,6 +156,33 @@ namespace WiredUpWebApi.Controllers
                 this.ValidateAuthCode(model.NewAuthCode);
 
                 user.AuthCode = model.NewAuthCode;
+                this.db.Users.Update(user);
+                this.db.SaveChanges();
+
+                var response = this.Request.CreateResponse(HttpStatusCode.Created);
+                return response;
+            });
+
+            return responseMsg;
+        }
+
+        [HttpPut]
+        [ActionName("editLanguages")]
+        public HttpResponseMessage EditLanguages([FromBody]UserEditModel model, string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var user = this.GetUserBySessionKey(sessionKey);
+
+                if (model.Languages != null && model.Languages.Length > LanguagesMaxLength)
+                {
+                    throw new ArgumentException(
+                        string.Format(
+                            "The length of the 'Languages field' must be less than {0} characters long",
+                            LanguagesMaxLength));
+                }
+
+                user.Languages = model.Languages;
                 this.db.Users.Update(user);
                 this.db.SaveChanges();
 
