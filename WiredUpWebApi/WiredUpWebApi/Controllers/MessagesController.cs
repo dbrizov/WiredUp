@@ -46,7 +46,8 @@ namespace WiredUpWebApi.Controllers
                 {
                     Content = model.Content,
                     Sender = sender,
-                    Receiver = receiver
+                    Receiver = receiver,
+                    PostDate = DateTime.Now
                 };
 
                 sender.SentMessages.Add(newMessage);
@@ -75,7 +76,8 @@ namespace WiredUpWebApi.Controllers
                 .Include(m => m.Sender)
                 .Include(m => m.Receiver)
                 .Where(m => m.SenderId == user.Id)
-                .Select(MessageModel.FromMessage);
+                .Select(MessageModel.FromMessage)
+                .OrderByDescending(m => m.PostDate);
 
             return messages;
         }
@@ -90,7 +92,8 @@ namespace WiredUpWebApi.Controllers
                 .Include(m => m.Sender)
                 .Include(m => m.Receiver)
                 .Where(m => m.ReceiverId == user.Id)
-                .Select(MessageModel.FromMessage);
+                .Select(MessageModel.FromMessage)
+                .OrderByDescending(m => m.PostDate);
 
             return messages;
         }
@@ -105,7 +108,8 @@ namespace WiredUpWebApi.Controllers
                 .Include(m => m.Sender)
                 .Include(m => m.Receiver)
                 .Where(m => m.ReceiverId == user.Id || m.SenderId == user.Id)
-                .Select(MessageModel.FromMessage);
+                .Select(MessageModel.FromMessage)
+                .OrderByDescending(m => m.PostDate);
 
             return messages;
         }

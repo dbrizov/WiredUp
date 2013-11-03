@@ -364,7 +364,8 @@ namespace WiredUpWebApi.Tests
                 {
                     Sender = userOne,
                     Receiver = userTwo,
-                    Content = "Valid content"
+                    Content = "Valid content",
+                    PostDate = DateTime.Now
                 };
 
                 this.db.Messages.Add(message);
@@ -425,7 +426,8 @@ namespace WiredUpWebApi.Tests
                 {
                     Sender = userTwo,
                     Receiver = userThree,
-                    Content = "Valid content"
+                    Content = "Valid content",
+                    PostDate = DateTime.Now
                 };
 
                 this.db.Messages.Add(message);
@@ -469,7 +471,8 @@ namespace WiredUpWebApi.Tests
                 {
                     Sender = userOne,
                     Receiver = userTwo,
-                    Content = "Valid content"
+                    Content = "Valid content",
+                    PostDate = DateTime.Now
                 };
 
                 this.db.Messages.Add(message);

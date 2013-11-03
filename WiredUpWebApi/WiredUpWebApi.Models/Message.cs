@@ -16,6 +16,9 @@ namespace WiredUpWebApi.Models
         [MaxLength(MessageConstants.ContentMaxLength)]
         public string Content { get; set; }
 
+        [Required]
+        public DateTime PostDate { get; set; }
+
         public int SenderId { get; set; }
         
         public virtual User Sender { get; set; }
