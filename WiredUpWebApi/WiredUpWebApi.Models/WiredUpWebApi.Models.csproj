@@ -44,7 +44,6 @@
     <Compile Include="Company.cs" />
     <Compile Include="CompanyPost.cs" />
     <Compile Include="ConnectionRequest.cs" />
-    <Compile Include="Constants\ConnectionRequestConstants.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="Constants\CertificateConstants.cs" />
     <Compile Include="Constants\CityConstants.cs" />
