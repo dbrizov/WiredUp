@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Http;
 using WiredUpWebApi.Data;
 using WiredUpWebApi.Models.Constants;
+using WiredUpWebApi.Models.CountryModels;
 
 namespace WiredUpWebApi.Controllers
 {
@@ -17,6 +19,21 @@ namespace WiredUpWebApi.Controllers
         public CountriesController(IUnitOfWorkData db)
             : base(db)
         {
+        }
+
+        public IQueryable<CountryModel> GetAllCountries([FromUri]string sessionKey)
+        {
+            if (!this.IsSessionKeyValid(sessionKey))
+            {
+                throw new ArgumentException("Invalid session key");
+            }
+
+            var countries = this.db.Countries
+                .All()
+                .Select(CountryModel.FromCountry)
+                .OrderByDescending(c => c.Name);
+
+            return countries;
         }
     }
 }
