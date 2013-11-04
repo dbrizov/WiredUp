@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -261,6 +262,33 @@ namespace WiredUpWebApi.Controllers
             var companies = user.FollowedCompanies.Select(CompanyModel.FromCompany.Compile());
 
             return companies.AsQueryable();
+        }
+
+        [HttpGet]
+        [ActionName("details")]
+        public UserDetailedModel GetUserDetails(
+            [FromUri]int userId, [FromUri]string sessionKey)
+        {
+            if (!this.IsSessionKeyValid(sessionKey))
+            {
+                throw new ArgumentException("Invalid session key");
+            }
+
+            var user = this.db.Users
+                .All()
+                .Include(u => u.Projects)
+                .Include(u => u.Skills)
+                .Include(u => u.Certificates)
+                .Where(u => u.Id == userId)
+                .Select(UserDetailedModel.FromUser.Compile())
+                .FirstOrDefault();
+
+            if (user == null)
+            {
+                throw new ArgumentException("Invalid user id");
+            }
+
+            return user;
         }
 
         private string GenerateSessionKey(int userId)
