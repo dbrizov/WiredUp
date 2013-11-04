@@ -168,7 +168,8 @@ namespace WiredUpWebApi.Controllers
 
         [HttpPut]
         [ActionName("edit")]
-        public HttpResponseMessage EditLanguages([FromBody]UserEditModel model, string sessionKey)
+        public HttpResponseMessage EditLanguages(
+            [FromBody]UserEditModel model, [FromUri]string sessionKey)
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
@@ -189,6 +190,62 @@ namespace WiredUpWebApi.Controllers
                 this.db.SaveChanges();
 
                 var response = this.Request.CreateResponse(HttpStatusCode.Created);
+                return response;
+            });
+
+            return responseMsg;
+        }
+
+        [HttpPut]
+        [ActionName("followCompany")]
+        public HttpResponseMessage FollowCompany(
+            [FromUri]int companyId, [FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var company = this.db.Companies.All().FirstOrDefault(c => c.Id == companyId);
+                if (company == null)
+                {
+                    throw new ArgumentException("Invalid company id");
+                }
+
+                var user = this.GetUserBySessionKey(sessionKey);
+                if (!user.FollowedCompanies.Any(c => c.Id == companyId))
+                {
+                    user.FollowedCompanies.Add(company);
+                    this.db.Users.Update(user);
+                    this.db.SaveChanges();
+                }
+
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
+                return response;
+            });
+
+            return responseMsg;
+        }
+
+        [HttpPut]
+        [ActionName("unfollowCompany")]
+        public HttpResponseMessage UnfollowCompany(
+            [FromUri]int companyId, [FromUri]string sessionKey)
+        {
+            var responseMsg = this.PerformOperationAndHandleExceptions(() =>
+            {
+                var company = this.db.Companies.All().FirstOrDefault(c => c.Id == companyId);
+                if (company == null)
+                {
+                    throw new ArgumentException("Invalid company id");
+                }
+
+                var user = this.GetUserBySessionKey(sessionKey);
+                if (user.FollowedCompanies.Any(c => c.Id == companyId))
+                {
+                    user.FollowedCompanies.Remove(company);
+                    this.db.Users.Update(user);
+                    this.db.SaveChanges();
+                }
+
+                var response = this.Request.CreateResponse(HttpStatusCode.OK);
                 return response;
             });
 
