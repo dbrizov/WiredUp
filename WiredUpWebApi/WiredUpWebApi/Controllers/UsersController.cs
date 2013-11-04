@@ -291,6 +291,31 @@ namespace WiredUpWebApi.Controllers
             return user;
         }
 
+        [HttpPost]
+        [ActionName("search")]
+        public IQueryable<UserModel> SearchForUser(
+            [FromBody]UserSearchModel model, [FromUri]string sessionKey)
+        {
+            if (!this.IsSessionKeyValid(sessionKey))
+            {
+                throw new ArgumentException("Invalid session key");
+            }
+
+            var queryStrings = model.Query.ToLower()
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var users = this.db.Users.All();
+            foreach (var query in queryStrings)
+            {
+                users = users.Where(
+                    u => u.FirstName.ToLower().Contains(query) ||
+                         u.LastName.ToLower().Contains(query) ||
+                         u.Email.ToLower().Contains(query));
+            }
+
+            return users.Select(UserModel.FromUser);
+        }
+
         private string GenerateSessionKey(int userId)
         {
             Random rand = new Random();
