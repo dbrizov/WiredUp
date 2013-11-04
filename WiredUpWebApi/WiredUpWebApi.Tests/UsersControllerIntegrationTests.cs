@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WiredUpWebApi.Models.UserModels;
 using System.Net;
 using Newtonsoft.Json;
 using WiredUpWebApi.Data;
+using WiredUpWebApi.Models;
+using System.Collections.Generic;
+using System.Net.Http;
 
 namespace WiredUpWebApi.Tests
 {
@@ -1314,6 +1318,555 @@ namespace WiredUpWebApi.Tests
                     "api/users/changepassword?sessionKey=" + userLoggedModel.SessionKey, updateUser);
                 Assert.AreEqual(HttpStatusCode.BadRequest, secondResponse.StatusCode);
             }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_AndSearchingByFirstName_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "d.b.rizov@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "pesho@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kocho"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_AndSearchingByLastName_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "d.b.rizov@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "pesho@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kochkata"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_AndSearchingByEmail_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kochobe@gmail.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_AndSearchingBySUbString_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "KO" // ne
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_WhenTestingCaseInsesitive_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "KOCHOBE@GMAIL.COM"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_WhenSearchingByFirstNameAndLastName_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "Kocho kochkata"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_WhenSearchingByFirstNameAndLastNameAndEmail_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Gerasim",
+                    LastName = "Gerasimovoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "Kocho kochkata kochobe@gmail.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenOnlyOneMatch_SearchByNameAndEmail_WhenNameIsTheSame_ShouldReturnOnlyOneUser()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "Kocho kochkata kochobe@gmail.com"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(1, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenTwoMatches_SearchByFirstName_ShouldReturnTwoUsers()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Gemomoto",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kocho"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(2, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual("Kocho Gemomoto", users.ElementAt(1).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenTwoMatches_SearchByLastName_ShouldReturnTwoUsers()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "asdjkashdjkahskjdh",
+                    LastName = "Kochkata",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kochkata"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(2, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual("asdjkashdjkahskjdh Kochkata", users.ElementAt(1).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenTwoMatches_SearchByFirstNameAndLastName_ShouldReturnTwoUsers()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "kochkata"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(2, users.Count());
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual("Kocho Kochkata", users.ElementAt(0).DisplayName);
+                Assert.AreEqual(userOne.Id, users.ElementAt(0).Id);
+            }
+        }
+
+        [TestMethod]
+        public void Search_WhenNotMatch()
+        {
+            using (new TransactionScope())
+            {
+                var userOne = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "kochobe@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+
+                var userTwo = new User()
+                {
+                    FirstName = "Kocho",
+                    LastName = "Kochkata",
+                    Email = "gemototo@gmail.com",
+                    AuthCode = new string('a', Sha1PasswordLength),
+                    SessionKey = "sessionKey"
+                };
+
+                this.db.Users.Add(userOne);
+                this.db.Users.Add(userTwo);
+                this.db.SaveChanges();
+
+                var searchModel = new UserSearchModel()
+                {
+                    Query = "askdjhajksdhjkahksjdasd"
+                };
+
+                var httpServer = new InMemoryHttpServer("http://localhost/");
+                var response = httpServer.CreatePostRequest(
+                    "/api/users/search?sessionKey=" + userOne.SessionKey, searchModel);
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                var users = this.GetAllUsersFromResponse(response);
+                Assert.AreEqual(0, users.Count());
+            }
+        }
+
+        private IEnumerable<UserModel> GetAllUsersFromResponse(HttpResponseMessage response)
+        {
+            string modelsAsString = response.Content.ReadAsStringAsync().Result;
+            var models = JsonConvert.DeserializeObject<IEnumerable<UserModel>>(modelsAsString);
+
+            return models;
         }
     }
 }
