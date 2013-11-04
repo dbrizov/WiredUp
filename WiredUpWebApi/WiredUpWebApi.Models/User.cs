@@ -59,6 +59,8 @@ namespace WiredUpWebApi.Models
 
         public virtual ICollection<UserPost> Posts { get; set; }
 
+        public virtual ICollection<ConnectionRequest> ConnectionRequests { get; set; }
+
         public User()
         {
             this.Connections = new HashSet<User>();
@@ -69,6 +71,7 @@ namespace WiredUpWebApi.Models
             this.SentMessages = new HashSet<Message>();
             this.ReceivedMessages = new HashSet<Message>();
             this.Posts = new HashSet<UserPost>();
+            this.ConnectionRequests = new HashSet<ConnectionRequest>();
         }
     }
 }

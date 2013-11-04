@@ -30,6 +30,8 @@ namespace WiredUpWebApi.Data
 
         public IDbSet<UserPost> UserPosts { get; set; }
 
+        public IDbSet<ConnectionRequest> ConnectionRequests { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Message>()

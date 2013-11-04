@@ -24,6 +24,8 @@ namespace WiredUpWebApi.Data
 
         IRepository<UserPost> UserPosts { get; }
 
+        IRepository<ConnectionRequest> ConnectionRequests { get; }
+
         int SaveChanges();
     }
 }

@@ -114,5 +114,13 @@ namespace WiredUpWebApi.Data
                 return this.GetRepository<UserPost>();
             }
         }
+
+        public IRepository<ConnectionRequest> ConnectionRequests
+        {
+            get
+            {
+                return this.GetRepository<ConnectionRequest>();
+            }
+        }
     }
 }
