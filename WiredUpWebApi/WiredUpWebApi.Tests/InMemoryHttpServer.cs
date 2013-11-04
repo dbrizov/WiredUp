@@ -87,6 +87,15 @@ namespace WiredUpWebApi.Tests
             return new List<Route>
             {
                 new Route(
+                    "CountriesApi",
+                    "api/countries/{action}/{id}",
+                    new
+                    {
+                        controller = "countries",
+                        id = RouteParameter.Optional
+                    }),
+
+                new Route(
                     "SkillsApi",
                     "api/skills/{action}/{id}",
                     new
