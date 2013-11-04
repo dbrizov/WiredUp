@@ -165,6 +165,8 @@
     <Compile Include="Models\CertificateModels\CertificateDetailedModel.cs" />
     <Compile Include="Models\CertificateModels\CertificateEditModel.cs" />
     <Compile Include="Models\CertificateModels\CertificateModel.cs" />
+    <Compile Include="Models\CompanyModels\CompanyModel.cs" />
+    <Compile Include="Models\CompanyModels\CompanySearchModel.cs" />
     <Compile Include="Models\MessageModels\MessageModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />
     <Compile Include="Models\ProjectModels\ProjectCreateModel.cs" />

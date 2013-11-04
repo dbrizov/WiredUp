@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Web.Http;
 using WiredUpWebApi.Data;
 using WiredUpWebApi.Models;
+using WiredUpWebApi.Models.CompanyModels;
 using WiredUpWebApi.Models.Constants;
 using WiredUpWebApi.Models.UserModels;
 
@@ -250,6 +251,16 @@ namespace WiredUpWebApi.Controllers
             });
 
             return responseMsg;
+        }
+
+        [HttpGet]
+        [ActionName("followedCompanies")]
+        public IQueryable<CompanyModel> GetFollowedCompanies([FromUri]string sessionKey)
+        {
+            var user = this.GetUserBySessionKey(sessionKey);
+            var companies = user.FollowedCompanies.Select(CompanyModel.FromCompany.Compile());
+
+            return companies.AsQueryable();
         }
 
         private string GenerateSessionKey(int userId)
