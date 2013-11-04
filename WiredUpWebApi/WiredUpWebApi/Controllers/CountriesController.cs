@@ -10,7 +10,6 @@ namespace WiredUpWebApi.Controllers
     public class CountriesController : BaseApiController
     {
         private const int CountryNameMaxLength = CountryConstants.NameMaxLength;
-        private const string AdminCode = "hh12890j109nu190g02b78r0f91bf890nu902n0d81h";
 
         public CountriesController()
             : base()
