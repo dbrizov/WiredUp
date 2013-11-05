@@ -126,10 +126,11 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("all")]
-        public IQueryable<UserModel> GetConnectionsForCurrentUser([FromUri]string sessionKey)
+        public IQueryable<ConnectionRequestModel> GetConnectionsForCurrentUser([FromUri]string sessionKey)
         {
             var user = this.GetUserBySessionKey(sessionKey);
-            var connections = user.Connections.Select(UserModel.FromConnection.Compile());
+            var connections =
+                user.ConnectionRequests.Select(ConnectionRequestModel.FromConnectionRequest.Compile());
 
             return connections.AsQueryable();
         }
