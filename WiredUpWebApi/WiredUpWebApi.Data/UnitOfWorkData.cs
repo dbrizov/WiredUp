@@ -107,6 +107,14 @@ namespace WiredUpWebApi.Data
             }
         }
 
+        public IRepository<Connection> Connections
+        {
+            get
+            {
+                return this.GetRepository<Connection>();
+            }
+        }
+
         public IRepository<UserPost> UserPosts
         {
             get

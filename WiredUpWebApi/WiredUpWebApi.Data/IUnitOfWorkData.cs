@@ -22,6 +22,8 @@ namespace WiredUpWebApi.Data
 
         IRepository<User> Users { get; }
 
+        IRepository<Connection> Connections { get; }
+
         IRepository<UserPost> UserPosts { get; }
 
         IRepository<ConnectionRequest> ConnectionRequests { get; }

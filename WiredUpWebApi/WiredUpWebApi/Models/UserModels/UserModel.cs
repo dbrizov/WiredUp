@@ -29,5 +29,18 @@ namespace WiredUpWebApi.Models.UserModels
                 };
             }
         }
+
+        public static Expression<Func<Connection, UserModel>> FromConnection
+        {
+            get
+            {
+                return conn => new UserModel()
+                {
+                    Id = conn.OtherUserId,
+                    DisplayName = conn.OtherUser.FirstName + " " + conn.OtherUser.LastName,
+                    Photo = conn.OtherUser.Photo
+                };
+            }
+        }
     }
 }

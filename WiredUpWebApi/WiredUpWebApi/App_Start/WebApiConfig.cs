@@ -17,6 +17,16 @@ namespace WiredUpWebApi
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "ConnectionRequestsApi",
+                routeTemplate: "api/connectionRequests/{action}/{id}",
+                defaults: new
+                {
+                    controller = "connectionRequests",
+                    id = RouteParameter.Optional
+                }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "CountriesApi",
                 routeTemplate: "api/countries/{action}/{id}",
                 defaults: new

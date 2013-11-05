@@ -43,6 +43,7 @@
     <Compile Include="Certificate.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="CompanyPost.cs" />
+    <Compile Include="Connection.cs" />
     <Compile Include="ConnectionRequest.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="Constants\CertificateConstants.cs" />

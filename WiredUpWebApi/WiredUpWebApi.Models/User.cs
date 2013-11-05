@@ -43,7 +43,7 @@ namespace WiredUpWebApi.Models
         [MaxLength(UserConstants.LanguagesMaxLength)]
         public string Languages { get; set; }
 
-        public virtual ICollection<User> Connections { get; set; }
+        public virtual ICollection<Connection> Connections { get; set; }
 
         public virtual ICollection<Company> FollowedCompanies { get; set; }
 
@@ -63,7 +63,7 @@ namespace WiredUpWebApi.Models
 
         public User()
         {
-            this.Connections = new HashSet<User>();
+            this.Connections = new HashSet<Connection>();
             this.FollowedCompanies = new HashSet<Company>();
             this.Projects = new HashSet<Project>();
             this.Certificates = new HashSet<Certificate>();

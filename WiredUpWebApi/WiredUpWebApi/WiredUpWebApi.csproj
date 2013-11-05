@@ -150,6 +150,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\CertificatesController.cs" />
+    <Compile Include="Controllers\ConnectionRequestsController.cs" />
     <Compile Include="Controllers\CountriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
@@ -167,6 +168,8 @@
     <Compile Include="Models\CertificateModels\CertificateModel.cs" />
     <Compile Include="Models\CompanyModels\CompanyModel.cs" />
     <Compile Include="Models\CompanyModels\CompanySearchModel.cs" />
+    <Compile Include="Models\ConnectionRequestModels\ConnectionRequestModel.cs" />
+    <Compile Include="Models\ConnectionRequestModels\ConnectionRequestSendModel.cs" />
     <Compile Include="Models\CountryModels\CountryModel.cs" />
     <Compile Include="Models\MessageModels\MessageModel.cs" />
     <Compile Include="Models\MessageModels\MessageSendModel.cs" />

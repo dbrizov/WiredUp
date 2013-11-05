@@ -28,6 +28,8 @@ namespace WiredUpWebApi.Data
 
         public IDbSet<User> Users { get; set; }
 
+        public IDbSet<Connection> Connections { get; set; }
+
         public IDbSet<UserPost> UserPosts { get; set; }
 
         public IDbSet<ConnectionRequest> ConnectionRequests { get; set; }
@@ -35,16 +37,28 @@ namespace WiredUpWebApi.Data
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Message>()
-                       .HasRequired(m => m.Sender)
-                       .WithMany(usr => usr.SentMessages)
-                       .HasForeignKey(m => m.SenderId)
-                       .WillCascadeOnDelete(false);
+                .HasRequired(m => m.Sender)
+                .WithMany(user => user.SentMessages)
+                .HasForeignKey(m => m.SenderId)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Message>()
-                       .HasRequired(m => m.Receiver)
-                       .WithMany(usr => usr.ReceivedMessages)
-                       .HasForeignKey(m => m.ReceiverId)
-                       .WillCascadeOnDelete(false);
+                .HasRequired(m => m.Receiver)
+                .WithMany(user => user.ReceivedMessages)
+                .HasForeignKey(m => m.ReceiverId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ConnectionRequest>()
+                .HasRequired(c => c.Receiver)
+                .WithMany(user => user.ConnectionRequests)
+                .HasForeignKey(c => c.ReceiverId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Connection>()
+                .HasRequired(c => c.User)
+                .WithMany(user => user.Connections)
+                .HasForeignKey(c => c.UserId)
+                .WillCascadeOnDelete(false);
         }
     }
 }
