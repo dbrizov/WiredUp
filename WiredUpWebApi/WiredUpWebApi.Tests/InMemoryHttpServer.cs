@@ -87,6 +87,24 @@ namespace WiredUpWebApi.Tests
             return new List<Route>
             {
                 new Route(
+                    "ConnectionsApi",
+                    "api/connections/{action}/{id}",
+                    new
+                    {
+                        controller = "connections",
+                        id = RouteParameter.Optional
+                    }),
+
+                new Route(
+                    "ConnectionRequestsApi",
+                    "api/connectionRequests/{action}/{id}",
+                    new
+                    {
+                        controller = "connectionRequests",
+                        id = RouteParameter.Optional
+                    }),
+
+                new Route(
                     "CountriesApi",
                     "api/countries/{action}/{id}",
                     new

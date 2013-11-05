@@ -6,7 +6,6 @@ using System.Web.Http;
 using WiredUpWebApi.Data;
 using WiredUpWebApi.Models;
 using WiredUpWebApi.Models.ConnectionRequestModels;
-using WiredUpWebApi.Models.UserModels;
 
 namespace WiredUpWebApi.Controllers
 {
