@@ -44,7 +44,7 @@ namespace WiredUpWebApi.Models.UserModels
                     DisplayName = user.FirstName + " " + user.LastName,
                     Email = user.Email,
                     Photo = user.Photo,
-                    Country = user.Country.Name,
+                    Country = user.Country == null ? null : user.Country.Name,
                     Skills = user.Skills.Select(s => s.Name),
                     Languages = user.Languages,
                     Certificates = user.Certificates.Select(CertificateModel.FromCertificate.Compile()),
