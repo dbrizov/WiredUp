@@ -142,25 +142,50 @@ namespace WiredUpWebApi.Tests
         }
 
         [TestMethod]
-        public void GetAllSkills_WhenSessionKeyIsCorrect_ShouldReturnCorrectSkills()
+        public void GetAllSkills_WhenDataIsCorrect_ShouldReturnCorrectSkills()
         {
             using (new TransactionScope())
             {
                 this.db.Users.Add(this.user);
                 this.db.SaveChanges();
 
-                this.db.Skills.Add(new Skill() { Name = "asd" });
-                this.db.Skills.Add(new Skill() { Name = "asd" });
-                this.db.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.db.Users.Update(this.user);
                 this.db.SaveChanges();
 
-                int skillsCount = this.db.Skills.All().Count();
+                int skillsCount = this.user.Skills.Count();
 
                 var response = this.httpServer.CreateGetRequest(
-                    "/api/skills/all?sessionKey=" + this.user.SessionKey);
+                    string.Format(
+                        "/api/skills/all?userId={0}&sessionKey={1}", this.user.Id, this.user.SessionKey));
 
                 var skills = this.GetAllSkillFromResponse(response);
                 Assert.AreEqual(skillsCount, skills.Count());
+            }
+        }
+
+        [TestMethod]
+        public void GetAllSkills_WhenUserIdIsInvalid_ShouldReturnZeroSkills()
+        {
+            using (new TransactionScope())
+            {
+                this.db.Users.Add(this.user);
+                this.db.SaveChanges();
+
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.db.Users.Update(this.user);
+                this.db.SaveChanges();
+
+                var response = this.httpServer.CreateGetRequest(
+                    string.Format(
+                        "/api/skills/all?userId={0}&sessionKey={1}", 0, this.user.SessionKey));
+
+                var skills = this.GetAllSkillFromResponse(response);
+                Assert.AreEqual(0, skills.Count());
             }
         }
 
@@ -171,11 +196,16 @@ namespace WiredUpWebApi.Tests
             {
                 this.db.Users.Add(this.user);
                 this.db.SaveChanges();
-
-                int skillsCount = this.db.Skills.All().Count();
+                
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.user.Skills.Add(new Skill() { Name = "asd" });
+                this.db.Users.Update(this.user);
+                this.db.SaveChanges();
 
                 var response = this.httpServer.CreateGetRequest(
-                    "/api/skills/all?sessionKey=invalidSessionKey");
+                    string.Format(
+                        "/api/skills/all?userId={0}&sessionKey={1}", this.user.Id, "invalidSessionKey"));
                 Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
             }
         }
