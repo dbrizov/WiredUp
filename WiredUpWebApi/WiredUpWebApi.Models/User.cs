@@ -34,6 +34,9 @@ namespace WiredUpWebApi.Models
         [MaxLength(UserConstants.SessionKeyMaxLength)]
         public string SessionKey { get; set; }
 
+        [MaxLength(UserConstants.AboutMeMaxLength)]
+        public string AboutMe { get; set; }
+
         public byte[] Photo { get; set; }
 
         public int? CountryId { get; set; }

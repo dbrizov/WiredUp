@@ -58,14 +58,18 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("all")]
-        public IQueryable<SkillModel> GetAllSkills([FromUri]string sessionKey)
+        public IQueryable<SkillModel> GetAllSkills(
+            [FromUri]int userId, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
             {
                 throw new ArgumentException("Invalid session key");
             }
 
-            var skills = this.db.Skills.All().Select(SkillModel.FromSkill);
+            var skills = this.db.Skills
+                .All()
+                .Where(c => c.Users.Any(u => u.Id == userId))
+                .Select(SkillModel.FromSkill);
             return skills;
         }
 

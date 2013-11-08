@@ -22,6 +22,7 @@ namespace WiredUpWebApi.Controllers
         private const int LastNameMaxLength = UserConstants.LastNameMaxLength;
         private const int EmailMaxLength = UserConstants.EmailMaxLength;
         private const int LanguagesMaxLength = UserConstants.LanguagesMaxLength;
+        private const int AboutMeMaxLength = UserConstants.AboutMeMaxLength;
         private const int Sha1PasswordLength = 40;
         private const string SessionKeyChars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
         private const int SessionKeyLength = UserConstants.SessionKeyMaxLength;
@@ -177,16 +178,17 @@ namespace WiredUpWebApi.Controllers
             {
                 var user = this.GetUserBySessionKey(sessionKey);
 
-                if (model.Languages != null && model.Languages.Length > LanguagesMaxLength)
-                {
-                    throw new ArgumentException(
-                        string.Format(
-                            "The length of the 'Languages field' must be less than {0} characters long",
-                            LanguagesMaxLength));
-                }
+                this.ValidateAboutMe(model.AboutMe);
+                this.ValidateLanguages(model.Languages);
 
                 user.Languages = model.Languages;
-                user.CountryId = model.CountryId;
+                user.AboutMe = model.AboutMe;
+
+                if (model.CountryId != 0)
+                {
+                    user.CountryId = model.CountryId;
+                }
+
                 user.Photo = model.Photo;
                 this.db.Users.Update(user);
                 this.db.SaveChanges();
@@ -395,6 +397,32 @@ namespace WiredUpWebApi.Controllers
             else if (!Regex.IsMatch(email, ValidEmailRegex))
             {
                 throw new ArgumentException("The 'Email' is invalid");
+            }
+        }
+
+        private void ValidateAboutMe(string aboutMe)
+        {
+            if (!string.IsNullOrWhiteSpace(aboutMe) &&
+                aboutMe.Length > AboutMeMaxLength)
+            {
+                throw new ArgumentException(
+                    string.Format(
+                        "The 'About Me' field must be less than {0} characters long",
+                        AboutMeMaxLength));
+            }
+        }
+
+        private void ValidateLanguages(string languages)
+        {
+
+
+            if (!string.IsNullOrWhiteSpace(languages) &&
+                languages.Length > LanguagesMaxLength)
+            {
+                throw new ArgumentException(
+                    string.Format(
+                        "The length of the 'Languages field' must be less than {0} characters long",
+                        LanguagesMaxLength));
             }
         }
     }

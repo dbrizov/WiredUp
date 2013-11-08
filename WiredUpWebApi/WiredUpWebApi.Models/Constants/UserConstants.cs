@@ -12,5 +12,6 @@ namespace WiredUpWebApi.Models.Constants
         public const int AuthCodeMaxLength = 40;
         public const int LanguagesMaxLength = 500;
         public const int SessionKeyMaxLength = 50;
+        public const int AboutMeMaxLength = 1000;
     }
 }

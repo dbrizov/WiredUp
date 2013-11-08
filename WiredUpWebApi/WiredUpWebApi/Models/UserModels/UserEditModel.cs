@@ -15,5 +15,8 @@ namespace WiredUpWebApi.Models.UserModels
 
         [DataMember(Name = "photo")]
         public byte[] Photo { get; set; }
+
+        [DataMember(Name = "aboutMe")]
+        public string AboutMe { get; set; }
     }
 }
