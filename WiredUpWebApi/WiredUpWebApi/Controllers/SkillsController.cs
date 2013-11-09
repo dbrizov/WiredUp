@@ -34,10 +34,16 @@ namespace WiredUpWebApi.Controllers
                 this.ValidateSkillName(model.Name);
 
                 var user = this.GetUserBySessionKey(sessionKey);
-                var skill = new Skill()
+                var skill = this.db.Skills.All()
+                    .FirstOrDefault(s => s.Name.ToLower() == model.Name.Trim().ToLower());
+
+                if (skill == null)
                 {
-                    Name = model.Name
-                };
+                    skill = new Skill()
+                    {
+                        Name = model.Name.Trim()
+                    };
+                }
 
                 user.Skills.Add(skill);
                 this.db.Users.Update(user);
