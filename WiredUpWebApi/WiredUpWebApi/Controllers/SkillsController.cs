@@ -64,7 +64,20 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("all")]
-        public IQueryable<SkillModel> GetAllSkills(
+        public IQueryable<SkillModel> GetAllSkills([FromUri]string sessionKey)
+        {
+            if (!this.IsSessionKeyValid(sessionKey))
+            {
+                throw new ArgumentException("Invalid session key");
+            }
+
+            var skills = this.db.Skills.All().Select(SkillModel.FromSkill);
+            return skills;
+        }
+
+        [HttpGet]
+        [ActionName("all")]
+        public IQueryable<SkillModel> GetAllSkillsForUser(
             [FromUri]int userId, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
@@ -87,13 +100,14 @@ namespace WiredUpWebApi.Controllers
         {
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
-                var skill = this.db.Skills.All().FirstOrDefault(s => s.Id == model.Id);
+                var user = this.GetUserBySessionKey(sessionKey);
+
+                var skill = user.Skills.FirstOrDefault(s => s.Id == model.Id);
                 if (skill == null)
                 {
-                    throw new ArgumentException("The user does nothave such skill");
+                    throw new ArgumentException("The user does not have such skill");
                 }
 
-                var user = this.GetUserBySessionKey(sessionKey);
                 user.Skills.Remove(skill);
                 this.db.Users.Update(user);
                 this.db.SaveChanges();
