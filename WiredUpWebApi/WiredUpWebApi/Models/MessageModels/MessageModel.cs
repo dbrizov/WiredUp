@@ -14,8 +14,14 @@ namespace WiredUpWebApi.Models.MessageModels
         [DataMember(Name = "content")]
         public string Content { get; set; }
 
+        [DataMember(Name = "senderId")]
+        public int SenderId { get; set; }
+
         [DataMember(Name = "senderName")]
         public string SenderName { get; set; }
+
+        [DataMember(Name = "receiverId")]
+        public int ReceiverId { get; set; }
 
         [DataMember(Name = "receiverName")]
         public string ReceiverName { get; set; }
@@ -31,7 +37,9 @@ namespace WiredUpWebApi.Models.MessageModels
                 {
                     Id = msg.Id,
                     Content = msg.Content,
+                    SenderId = msg.SenderId,
                     SenderName = msg.Sender.FirstName + " " + msg.Sender.LastName,
+                    ReceiverId = msg.ReceiverId,
                     ReceiverName = msg.Receiver.FirstName + " " + msg.Receiver.LastName,
                     PostDate = msg.PostDate
                 };
