@@ -114,6 +114,19 @@ namespace WiredUpWebApi.Controllers
             return messages;
         }
 
+        [HttpGet]
+        [ActionName("details")]
+        public MessageModel GetMessageDetails([FromUri]int id, [FromUri]string sessionKey)
+        {
+            var message = this.GetAllMessages(sessionKey).FirstOrDefault(m => m.Id == id);
+            if (message == null)
+            {
+                throw new ArgumentException("Invalid message id");
+            }
+
+            return message;
+        }
+
         [HttpDelete]
         [ActionName("delete")]
         public HttpResponseMessage DeleteMessage([FromUri]int id, [FromUri]string sessionKey)
