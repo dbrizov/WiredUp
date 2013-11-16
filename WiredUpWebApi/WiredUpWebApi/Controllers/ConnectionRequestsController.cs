@@ -32,7 +32,29 @@ namespace WiredUpWebApi.Controllers
                 var receiver = this.db.Users.All().FirstOrDefault(u => u.Id == model.ReceiverId);
                 if (receiver == null)
                 {
-                    throw new ArgumentException("Invalid recevierId");
+                    throw new ArgumentException("Invalid receiverId");
+                }
+
+                if (sender.Id == receiver.Id)
+                {
+                    throw new ArgumentException("You can't send connection request to yourself");
+                }
+
+                // Check if user A is sendind a connection request to user B for a second time
+                var existingConnectionRequest = receiver.ConnectionRequests
+                    .FirstOrDefault(cr => cr.SenderId == sender.Id && cr.ReceiverId == receiver.Id);
+                if (existingConnectionRequest != null) 
+                {
+                    throw new ArgumentException("That user already has a connection request from you");
+                }
+
+                // Check if the user A is trying to send a connection request to user B,
+                // but user B has already sent a connection request to user A
+                existingConnectionRequest = sender.ConnectionRequests
+                    .FirstOrDefault(cr => cr.SenderId == receiver.Id && cr.ReceiverId == sender.Id);
+                if (existingConnectionRequest != null)
+                {
+                    throw new ArgumentException("You have a connection request from that user");
                 }
 
                 var connectionRequest = new ConnectionRequest()
