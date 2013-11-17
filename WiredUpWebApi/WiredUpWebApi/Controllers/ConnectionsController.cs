@@ -37,14 +37,23 @@ namespace WiredUpWebApi.Controllers
             var responseMsg = this.PerformOperationAndHandleExceptions(() =>
             {
                 var user = this.GetUserBySessionKey(sessionKey);
-                var connection = user.Connections.FirstOrDefault(c => c.Id == id);
-                if (connection == null)
+                var firstConnection = user.Connections.FirstOrDefault(c => c.Id == id);
+                if (firstConnection == null)
                 {
                     throw new ArgumentException(
                         "Invalid connection id. The users does not have such connection");
                 }
 
-                this.db.Connections.Delete(connection);
+                var otherUser = firstConnection.OtherUser;
+                var secondConnection = otherUser.Connections.FirstOrDefault(c => c.OtherUserId == user.Id);
+                if (secondConnection == null)
+                {
+                    throw new ArgumentException(
+                        "The other user is not connection with you");
+                }
+
+                this.db.Connections.Delete(firstConnection);
+                this.db.Connections.Delete(secondConnection);
                 this.db.SaveChanges();
 
                 var response = this.Request.CreateResponse(HttpStatusCode.OK);

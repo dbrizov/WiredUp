@@ -88,7 +88,7 @@ namespace WiredUpWebApi.Tests
         {
             using (new TransactionScope())
             {
-                int connectionsCount = this.db.Connections.All().Count();
+                int oldConnectionsCount = this.db.Connections.All().Count();
 
                 this.db.Users.Add(this.firstUser);
                 this.db.Users.Add(this.secondUser);
@@ -100,10 +100,17 @@ namespace WiredUpWebApi.Tests
                     OtherUser = this.secondUser
                 };
 
+                var secondConnection = new Connection()
+                {
+                    User = this.secondUser,
+                    OtherUser = this.firstUser
+                };
+
                 this.db.Connections.Add(firstConnection);
+                this.db.Connections.Add(secondConnection);
                 this.db.SaveChanges();
 
-                Assert.AreEqual(connectionsCount + 1, this.db.Connections.All().Count());
+                Assert.AreEqual(oldConnectionsCount + 2, this.db.Connections.All().Count());
 
                 var response = this.httpServer.CreateDeleteRequest(
                     string.Format(
@@ -111,7 +118,7 @@ namespace WiredUpWebApi.Tests
                         firstConnection.Id,
                         this.firstUser.SessionKey));
 
-                Assert.AreEqual(connectionsCount, this.db.Connections.All().Count());
+                Assert.AreEqual(oldConnectionsCount, this.db.Connections.All().Count());
             }
         }
 
