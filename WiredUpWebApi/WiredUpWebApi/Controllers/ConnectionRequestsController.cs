@@ -40,7 +40,14 @@ namespace WiredUpWebApi.Controllers
                     throw new ArgumentException("You can't send connection request to yourself");
                 }
 
-                // Check if user A is sendind a connection request to user B for a second time
+                var existingConnection =
+                    sender.Connections.FirstOrDefault(c => c.OtherUserId == receiver.Id);
+                if (existingConnection != null)
+                {
+                    throw new ArgumentException("You already have a connection with that user");
+                }
+
+                // Check if user A is sending a connection request to user B for a second time
                 var existingConnectionRequest = receiver.ConnectionRequests
                     .FirstOrDefault(cr => cr.SenderId == sender.Id && cr.ReceiverId == receiver.Id);
                 if (existingConnectionRequest != null) 
