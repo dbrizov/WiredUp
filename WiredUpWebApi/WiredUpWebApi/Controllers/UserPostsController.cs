@@ -80,7 +80,7 @@ namespace WiredUpWebApi.Controllers
 
         [HttpGet]
         [ActionName("details")]
-        public UserPostModel GetPostDetails([FromUri]int id, [FromUri]int userId, [FromUri]string sessionKey)
+        public UserPostModel GetPostDetails([FromUri]int id, [FromUri]string sessionKey)
         {
             if (!this.IsSessionKeyValid(sessionKey))
             {
@@ -89,7 +89,7 @@ namespace WiredUpWebApi.Controllers
 
             var post = this.db.UserPosts
                 .All()
-                .Where(p => p.Id == id && p.UserId == userId)
+                .Where(p => p.Id == id)
                 .Select(UserPostModel.FromUserPost)
                 .FirstOrDefault();
 

@@ -335,8 +335,8 @@ namespace WiredUpWebApi.Tests
 
                 var response = this.httpServer.CreateGetRequest(
                     string.Format(
-                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
-                        secondPost.Id, this.firstUser.Id, this.firstUser.SessionKey));
+                        "/api/userposts/details?id={0}&sessionKey={1}",
+                        secondPost.Id, this.firstUser.SessionKey));
                 Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
                 var post = this.GetUserPostModelFromResponse(response);
@@ -374,8 +374,8 @@ namespace WiredUpWebApi.Tests
 
                 var response = this.httpServer.CreateGetRequest(
                     string.Format(
-                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
-                        0, this.firstUser.Id, this.firstUser.SessionKey));
+                        "/api/userposts/details?id={0}&sessionKey={1}",
+                        0, this.firstUser.SessionKey));
                 Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
             }
         }
@@ -407,8 +407,8 @@ namespace WiredUpWebApi.Tests
 
                 var response = this.httpServer.CreateGetRequest(
                     string.Format(
-                        "/api/userposts/details?id={0}&userId={1}&sessionKey={2}",
-                        secondPost.Id, this.firstUser.Id, "invalidSessionKey"));
+                        "/api/userposts/details?id={0}&sessionKey={1}",
+                        secondPost.Id, "invalidSessionKey"));
                 Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
             }
         }
